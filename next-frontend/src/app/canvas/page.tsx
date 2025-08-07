@@ -75,12 +75,10 @@ export default function Page() {
           aria-label="draw or erase mode"
         >
           <ToggleButton value="draw" aria-label="draw mode">
-            <CreateIcon sx={{ mr: 1 }} />
-            Draw
+            <CreateIcon />
           </ToggleButton>
           <ToggleButton value="erase" aria-label="erase mode">
-            <AutoFixHighIcon sx={{ mr: 1 }} />
-            Erase
+            <AutoFixHighIcon />
           </ToggleButton>
         </ToggleButtonGroup>
 
