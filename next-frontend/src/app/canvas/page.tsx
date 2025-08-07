@@ -149,6 +149,7 @@ export default function Page() {
           lazyRadius={0}
           canvasWidth={350}
           canvasHeight={350}
+          hideGrid={true}
         />
       </Box>
 
