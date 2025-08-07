@@ -119,7 +119,7 @@ export default function Page() {
 
       {/* Action Buttons */}
       <div className="mt-4 flex gap-2">
-        <Button variant="contained" onClick={handleReset}>
+        <Button variant="outlined" onClick={handleReset}>
           Reset
         </Button>
         <Button variant="contained" onClick={handleSave}>
