@@ -1,3 +1,9 @@
+"use client";
+import CanvasDraw from "react-canvas-draw";
 export default function Page() {
-  return <h1>hello from page</h1>;
+  return (
+    <div className="flex flex-col items-center">
+      <CanvasDraw brushRadius={1} lazyRadius={0} />
+    </div>
+  );
 }
