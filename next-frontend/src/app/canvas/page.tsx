@@ -107,8 +107,8 @@ export default function Page() {
           brushRadius={brushRadius}
           brushColor={brushColor}
           lazyRadius={0}
-          canvasWidth={600}
-          canvasHeight={400}
+          canvasWidth={350}
+          canvasHeight={350}
         />
       </Box>
 
