@@ -30,11 +30,9 @@ export default function Page() {
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <h1 className="text-4xl my-3">draw... or else</h1>
-
+    <div className="flex flex-col items-center h-full">
       {/* Controls */}
-      <Box className="flex gap-4 mb-4 items-center">
+      <Box className="flex gap-4 mb-4 items-center mt-10">
         {/* Custom Color Input */}
         <Box className="flex items-center gap-2">
           <Typography variant="body2">Color: </Typography>
