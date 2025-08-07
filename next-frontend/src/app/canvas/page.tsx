@@ -1,17 +1,27 @@
 "use client";
 import { useRef, useState } from "react";
 import CanvasDraw from "react-canvas-draw";
-import { Button, Slider, Typography, Box, Popover } from "@mui/material";
+import {
+  Button,
+  Slider,
+  Typography,
+  Box,
+  Popover,
+  ToggleButton,
+  ToggleButtonGroup,
+} from "@mui/material";
 import ColorLensIcon from "@mui/icons-material/ColorLens";
 import BrushIcon from "@mui/icons-material/Brush";
+import CreateIcon from "@mui/icons-material/Create";
+import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
 
 export default function Page() {
   const canvasRef = useRef<CanvasDraw | null>(null);
   const colorInputRef = useRef<HTMLInputElement | null>(null);
   const [brushColor, setBrushColor] = useState("#000000");
   const [brushRadius, setBrushRadius] = useState(4);
-
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [drawMode, setDrawMode] = useState<"draw" | "erase">("draw");
 
   const handleSizeClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -44,18 +54,47 @@ export default function Page() {
     setBrushRadius(newValue as number);
   };
 
+  const handleModeChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newMode: "draw" | "erase",
+  ) => {
+    if (newMode !== null) {
+      setDrawMode(newMode);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center h-full w-full p-4">
       {/* --- Controls --- */}
       <Box className="flex gap-4 mb-4 items-center mt-10">
-        {/* Color Button */}
-        <Button
-          variant="outlined"
-          onClick={() => colorInputRef.current?.click()}
-          startIcon={<ColorLensIcon />}
+        {/* Draw/Erase Toggle */}
+        <ToggleButtonGroup
+          value={drawMode}
+          exclusive
+          onChange={handleModeChange}
+          aria-label="draw or erase mode"
         >
-          Color
-        </Button>
+          <ToggleButton value="draw" aria-label="draw mode">
+            <CreateIcon sx={{ mr: 1 }} />
+            Draw
+          </ToggleButton>
+          <ToggleButton value="erase" aria-label="erase mode">
+            <AutoFixHighIcon sx={{ mr: 1 }} />
+            Erase
+          </ToggleButton>
+        </ToggleButtonGroup>
+
+        {/* Color Button - only show when in draw mode */}
+        {drawMode === "draw" && (
+          <Button
+            variant="outlined"
+            onClick={() => colorInputRef.current?.click()}
+            startIcon={<ColorLensIcon />}
+          >
+            Color
+          </Button>
+        )}
+
         {/* Hidden Color Input */}
         <input
           ref={colorInputRef}
@@ -74,6 +113,7 @@ export default function Page() {
         >
           Size
         </Button>
+
         {/* Brush Size Popover */}
         <Popover
           id={id}
@@ -86,7 +126,9 @@ export default function Page() {
           }}
         >
           <Box sx={{ p: 2, width: 200 }}>
-            <Typography gutterBottom>Brush Size: {brushRadius}px</Typography>
+            <Typography gutterBottom>
+              {drawMode === "draw" ? "Brush" : "Eraser"} Size: {brushRadius}px
+            </Typography>
             <Slider
               value={brushRadius}
               onChange={handleBrushSizeChange}
@@ -94,7 +136,7 @@ export default function Page() {
               max={20}
               step={1}
               valueLabelDisplay="auto"
-              sx={{ color: brushColor }}
+              sx={{ color: drawMode === "draw" ? brushColor : "#666" }}
             />
           </Box>
         </Popover>
@@ -105,7 +147,7 @@ export default function Page() {
         <CanvasDraw
           ref={canvasRef}
           brushRadius={brushRadius}
-          brushColor={brushColor}
+          brushColor={drawMode === "draw" ? brushColor : "#FFFFFF"}
           lazyRadius={0}
           canvasWidth={350}
           canvasHeight={350}
