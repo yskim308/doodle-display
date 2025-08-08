@@ -4,6 +4,7 @@
     "": {
       "name": "hono-backend",
       "dependencies": {
+        "@datastructures-js/deque": "^1.0.5",
         "hono": "^4.9.0",
       },
       "devDependencies": {
@@ -12,6 +13,8 @@
     },
   },
   "packages": {
+    "@datastructures-js/deque": ["@datastructures-js/deque@1.0.5", "", {}, "sha512-ogeIkpcCGnM+LAZYZqXBXn6Nx0a/ikkKDFPoa1MzZWRFyEdfVUNwkHclET/T8jkyNM1dN6NmPDfenNKcKazjjg=="],
+
     "@types/bun": ["@types/bun@1.2.19", "", { "dependencies": { "bun-types": "1.2.19" } }, "sha512-d9ZCmrH3CJ2uYKXQIUuZ/pUnTqIvLDS0SK7pFmbx8ma+ziH/FRMoAq5bYpRG7y+w1gl+HgyNZbtqgMq4W4e2Lg=="],
 
     "@types/node": ["@types/node@24.2.0", "", { "dependencies": { "undici-types": "~7.10.0" } }, "sha512-3xyG3pMCq3oYCNg7/ZP+E1ooTaGB4cG8JWRsqqOYQdbWNY4zbaV0Ennrd7stjiJEFZCaybcIgpTjJWHRfBSIDw=="],
