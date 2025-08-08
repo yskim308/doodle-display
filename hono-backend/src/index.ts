@@ -25,7 +25,7 @@ app.get("/", (c: Context) => {
 
 // submit body
 interface SubmitBody {
-  canvas: Canvas;
+  canvas: string;
 }
 app.post("/submit", async (c: Context) => {
   const { canvas }: SubmitBody = await c.req.json();
