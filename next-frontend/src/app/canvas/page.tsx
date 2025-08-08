@@ -38,7 +38,7 @@ export default function Page() {
   const handleSave = () => {
     if (!canvasRef.current) return;
     const saveData = canvasRef.current.getSaveData();
-    const backendBaseURL = process.env.BACKEND_BASE;
+    const backendBaseURL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
     if (!backendBaseURL)
       throw new Error("backend base url not defined in .env");
     axios.post(`${backendBaseURL}/submit`, {
