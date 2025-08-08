@@ -1,10 +1,24 @@
 import { serve } from "bun";
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import circularArray from "./CircularArray";
 import type { Context } from "hono";
 import type { Canvas, ImageObject } from "./types";
 
 const app = new Hono();
+
+// cors settings
+const frontendBase = process.env.FRONTEND_BASE_URL;
+let origin: string[] = ["localhost:3000"];
+if (frontendBase) origin.push(frontendBase);
+app.use(
+  "/*",
+  cors({
+    origin: origin,
+  }),
+);
+
+// routes
 app.get("/", (c: Context) => {
   return c.text("Hewwo!");
 });
@@ -32,6 +46,7 @@ app.get("/getAll", async (c: Context) => {
   return c.json(objectList);
 });
 
+// settings for server
 serve({
   fetch: app.fetch,
   port: 4000,
