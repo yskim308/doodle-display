@@ -14,3 +14,8 @@ export interface Point {
   x: number;
   y: number;
 }
+
+export interface ImageObject {
+  imageId: string;
+  canvas: Canvas;
+}
