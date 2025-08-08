@@ -71,13 +71,6 @@ export default function Page() {
 
           {images.length > 0 && <DrawingsGrid images={images} />}
         </Container>
-
-        <FabControls
-          isPolling={isPolling}
-          isLoading={isLoading}
-          onRefresh={refresh}
-          onToggle={togglePolling}
-        />
       </Box>
     </>
   );
