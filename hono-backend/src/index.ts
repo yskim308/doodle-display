@@ -13,6 +13,6 @@ app.get("/", (c: Context) => {
 
 serve({
   fetch: app.fetch,
-  port: 3000,
+  port: 4000,
 });
-console.log("running on port 3000");
+console.log("running on port 4000");
