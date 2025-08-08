@@ -14,6 +14,10 @@ class CircularArray {
     }
     this.deque.pushBack(object);
   }
+
+  getAll(): ImageObject[] {
+    return this.deque.toArray();
+  }
 }
 
 const circularArray = new CircularArray();
