@@ -7,7 +7,6 @@ import { PollControls } from "@/components/drawings/poll-controls";
 import { ErrorAlert } from "@/components/drawings/error-alert";
 import { EmptyState } from "@/components/drawings/empty-state";
 import { DrawingsGrid } from "@/components/drawings/drawings-grid";
-import { FabControls } from "@/components/drawings/fab-controls";
 import { useDrawingPolling } from "@/hooks/use-drawing-polling";
 
 export default function Page() {
