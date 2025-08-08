@@ -1,5 +1,9 @@
+import { serve } from "bun";
 import { Hono } from "hono";
 import type { Context } from "hono";
+
+// interfaces
+interface Canvas {}
 
 const app = new Hono();
 
@@ -7,4 +11,8 @@ app.get("/", (c: Context) => {
   return c.text("Hewwo!");
 });
 
-export default app;
+serve({
+  fetch: app.fetch,
+  port: 3000,
+});
+console.log("running on port 3000");
