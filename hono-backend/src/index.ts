@@ -16,7 +16,7 @@ interface SubmitBody {
 app.post("/submit", async (c: Context) => {
   const { canvas }: SubmitBody = await c.req.json();
   if (!canvas) {
-    c.text("missing canvas field", 400);
+    return c.text("missing canvas field", 400);
   }
   const uniqueId = crypto.randomUUID();
   const imageObject: ImageObject = {
@@ -24,12 +24,12 @@ app.post("/submit", async (c: Context) => {
     canvas: canvas,
   };
   circularArray.insert(imageObject);
-  c.text("inserted succesfully", 200);
+  return c.text("inserted succesfully", 200);
 });
 
-app.post("/getAll", async (c: Context) => {
+app.get("/getAll", async (c: Context) => {
   const objectList = circularArray.getAll();
-  c.json(objectList);
+  return c.json(objectList);
 });
 
 serve({
