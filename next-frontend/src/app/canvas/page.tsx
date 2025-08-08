@@ -24,6 +24,8 @@ export default function Page() {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [drawMode, setDrawMode] = useState<"draw" | "erase">("draw");
 
+  const backendBaseURL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
+  if (!backendBaseURL) throw new Error("backend base url not defined in .env");
   const handleSizeClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -38,9 +40,6 @@ export default function Page() {
   const handleSave = () => {
     if (!canvasRef.current) return;
     const saveData = canvasRef.current.getSaveData();
-    const backendBaseURL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
-    if (!backendBaseURL)
-      throw new Error("backend base url not defined in .env");
     axios.post(`${backendBaseURL}/submit`, {
       canvas: saveData,
     });
