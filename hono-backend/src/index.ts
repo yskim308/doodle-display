@@ -2,9 +2,6 @@ import { serve } from "bun";
 import { Hono } from "hono";
 import type { Context } from "hono";
 
-// interfaces
-interface Canvas {}
-
 const app = new Hono();
 
 app.get("/", (c: Context) => {
