@@ -27,6 +27,11 @@ app.post("/submit", async (c: Context) => {
   c.text("inserted succesfully", 200);
 });
 
+app.post("/getAll", async (c: Context) => {
+  const objectList = circularArray.getAll();
+  c.json(objectList);
+});
+
 serve({
   fetch: app.fetch,
   port: 4000,
