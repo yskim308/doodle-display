@@ -14,6 +14,7 @@ import ColorLensIcon from "@mui/icons-material/ColorLens";
 import BrushIcon from "@mui/icons-material/Brush";
 import CreateIcon from "@mui/icons-material/Create";
 import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
+import axios from "axios";
 
 export default function Page() {
   const canvasRef = useRef<CanvasDraw | null>(null);
@@ -37,7 +38,12 @@ export default function Page() {
   const handleSave = () => {
     if (!canvasRef.current) return;
     const saveData = canvasRef.current.getSaveData();
-    console.log("Canvas data saved:", saveData);
+    const backendBaseURL = process.env.BACKEND_BASE;
+    if (!backendBaseURL)
+      throw new Error("backend base url not defined in .env");
+    axios.post(`${backendBaseURL}/submit`, {
+      canvas: saveData,
+    });
     canvasRef.current.clear();
   };
 
