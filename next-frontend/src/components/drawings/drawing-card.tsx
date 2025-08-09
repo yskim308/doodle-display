@@ -17,7 +17,6 @@ export interface DrawingCardProps {
 
 export const DrawingCard = React.memo(function DrawingCard({
   image,
-  index,
 }: DrawingCardProps) {
   const normalizedSaveData = useMemo(
     () => normalizeSaveDataString(image.canvas),
