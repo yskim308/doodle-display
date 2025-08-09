@@ -3,7 +3,6 @@
 import React from "react";
 import { Box, Container, CssBaseline } from "@mui/material";
 import { AppHeader } from "@/components/drawings/app-header";
-import { PollControls } from "@/components/drawings/poll-controls";
 import { ErrorAlert } from "@/components/drawings/error-alert";
 import { EmptyState } from "@/components/drawings/empty-state";
 import { DrawingsGrid } from "@/components/drawings/drawings-grid";
@@ -25,10 +24,9 @@ export default function Page() {
     error,
     lastUpdate,
     setError,
-    setPollInterval,
     togglePolling,
     refresh,
-  } = useDrawingPolling({ backendBase, defaultInterval: 1000 });
+  } = useDrawingPolling({ backendBase, defaultInterval: 3000 });
 
   const showEmpty = !isLoading && images.length === 0;
   const showInitialLoader = isLoading && images.length === 0;
@@ -54,15 +52,6 @@ export default function Page() {
         }}
       >
         <Container maxWidth="xl" sx={{ pt: 4 }}>
-          <PollControls
-            pollInterval={pollInterval}
-            isPolling={isPolling}
-            isLoading={isLoading}
-            onSetInterval={setPollInterval}
-            onRefresh={refresh}
-            onToggle={togglePolling}
-          />
-
           <ErrorAlert error={error} onClose={() => setError(null)} />
 
           {showInitialLoader && <EmptyState loading />}
