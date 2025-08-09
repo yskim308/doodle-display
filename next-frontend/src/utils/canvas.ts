@@ -13,7 +13,7 @@ export function normalizeSaveDataString(data: string): string {
     if (
       parsed &&
       typeof parsed === "object" &&
-      Array.isArray((parsed as any).lines)
+      Array.isArray((parsed as { lines: unknown[] }).lines)
     ) {
       return JSON.stringify(parsed);
     }
