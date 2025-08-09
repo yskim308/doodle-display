@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { Card, CardContent, CardHeader, Divider, Box } from "@mui/material";
+import { Card, CardContent, Box } from "@mui/material";
 import CanvasDraw from "react-canvas-draw";
 import {
   normalizeSaveDataString,
