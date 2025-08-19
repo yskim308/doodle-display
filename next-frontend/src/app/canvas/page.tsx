@@ -10,10 +10,13 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material";
-import ColorLensIcon from "@mui/icons-material/ColorLens";
-import BrushIcon from "@mui/icons-material/Brush";
+import ColorLensIcon from '@mui/icons-material/ColorLens'; // color change
+import BrushIcon from "@mui/icons-material/Brush"; //paintbrush
 import CreateIcon from "@mui/icons-material/Create";
-import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
+import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh"; //eraser
+import RestartAltIcon from '@mui/icons-material/RestartAlt'; //restart
+import LogoutIcon from '@mui/icons-material/Logout'; // send
+import BubbleChartIcon from '@mui/icons-material/BubbleChart'; // size
 import axios from "axios";
 
 export default function Page() {
