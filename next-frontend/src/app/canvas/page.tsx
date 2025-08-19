@@ -8,8 +8,12 @@ import {
   Box,
   Popover,
   ToggleButton,
+  IconButton,
+  Stack,
   ToggleButtonGroup,
 } from "@mui/material";
+import Edit from "@mui/icons-material/Edit";
+import { FormatColorFill } from "@mui/icons-material";
 import ColorLensIcon from '@mui/icons-material/ColorLens'; // color change
 import BrushIcon from "@mui/icons-material/Brush"; //paintbrush
 import CreateIcon from "@mui/icons-material/Create";
