@@ -46,14 +46,31 @@ export default function Page() {
   const open = Boolean(anchorEl);
   const id = open ? "brush-size-popover" : undefined;
 
-  const handleSave = () => {
-    if (!canvasRef.current) return;
-    const saveData = canvasRef.current.getSaveData();
-    axios.post(`${backendBaseURL}/submit`, {
-      canvas: saveData,
+const handleSave = async () => {
+  if (!canvasRef.current) return;
+
+  // 1. Animated JSON (for /view)
+  const saveData = canvasRef.current.getSaveData();
+
+  // 2. Flat PNG (for /success)
+  // TS doesn’t know about .canvasContainer, so we cast to `any`
+  const canvasEl = (canvasRef.current as any).canvasContainer
+    .children[1] as HTMLCanvasElement;
+  const pngData = canvasEl.toDataURL("image/png");
+
+  try {
+    const res = await axios.post(`${backendBaseURL}/submit`, {
+      json: saveData,
+      png: pngData,
     });
+
+    console.log("Saved successfully", res.data);
     canvasRef.current.clear();
-  };
+  } catch (err) {
+    console.error("Error saving", err);
+  }
+};
+
 
   const handleReset = () => {
     if (!canvasRef.current) return;

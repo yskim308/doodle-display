@@ -25,20 +25,22 @@ app.get("/", (c: Context) => {
 
 // submit body
 interface SubmitBody {
-  canvas: string;
+  json: string;
+  png: string;
 }
 app.post("/submit", async (c: Context) => {
-  const { canvas }: SubmitBody = await c.req.json();
-  if (!canvas) {
-    return c.text("missing canvas field", 400);
+  const { json, png }: SubmitBody = await c.req.json();
+  if (!json || !png) {
+    return c.text("missing image field", 400);
   }
   const uniqueId = crypto.randomUUID();
   const imageObject: ImageObject = {
     imageId: uniqueId,
-    canvas: canvas,
+    json,
+    png,
   };
   circularArray.insert(imageObject);
-  
+  console.log("New image inserted:", uniqueId);
   return c.json({
     message: "inserted succesfully",
     imageID: uniqueId,}, 200);
@@ -49,16 +51,26 @@ app.get("/getAll", async (c: Context) => {
   return c.json(objectList);
 });
 
-app.get("/get/:id", async (c: Context) => {
+// for animated playback (/view)
+app.get("/view/:id", async (c: Context) => {
   const id = c.req.param("id");
-  const objectList = circularArray.getAll(); 
-  const image = objectList.find((obj) => obj.imageId === id);
+  const image = circularArray.getAll().find((obj) => obj.imageId === id);
 
-  if (!image) {
-    return c.text("Image not found", 404);
-  }
-  return c.json(image, 200);
+  if (!image) return c.text("Image not found", 404);
+
+  return c.json({ imageId: id, canvas: image.json });
 });
+
+// for static success page (/success)
+app.get("/success/:id", async (c: Context) => {
+  const id = c.req.param("id");
+  const image = circularArray.getAll().find((obj) => obj.imageId === id);
+
+  if (!image) return c.text("Image not found", 404);
+
+  return c.json({ imageId: id, canvas: image.png });
+});
+
 
 // settings for server
 serve({
