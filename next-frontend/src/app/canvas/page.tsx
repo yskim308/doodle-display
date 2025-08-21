@@ -13,15 +13,17 @@ import {
   ToggleButtonGroup,
 } from "@mui/material";
 import Edit from "@mui/icons-material/Edit";
-import { FormatColorFill } from "@mui/icons-material";
+import FormatColorFill from "@mui/icons-material/FormatColorFill";
 import ColorLensIcon from '@mui/icons-material/ColorLens'; // color change
 import BrushIcon from "@mui/icons-material/Brush"; //paintbrush
 import CreateIcon from "@mui/icons-material/Create";
 import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh"; //eraser
 import RestartAltIcon from '@mui/icons-material/RestartAlt'; //restart
-import LogoutIcon from '@mui/icons-material/Logout'; // send
+import EastIcon from '@mui/icons-material/East';
 import BubbleChartIcon from '@mui/icons-material/BubbleChart'; // size
+import CommitIcon from '@mui/icons-material/Commit';
 import axios from "axios";
+import { isNullOrUndefined } from "node:util";
 
 export default function Page() {
   const canvasRef = useRef<CanvasDraw | null>(null);
@@ -76,7 +78,41 @@ export default function Page() {
   };
 
   return (
-    <div className="flex flex-col items-center h-full w-full p-4">
+    <div className="flex flex-col items-center h-full w-full p-4 bg-black text-white">
+  <Box
+    sx={{
+      display:"flex",
+      flexDirection: "column",
+      alignItems: "center",
+      mt: 2
+    }}>
+    <img
+    src="/logo.png"
+    alt="Logo"
+    style={{ width: "240px", height: "auto" }}
+    />
+    <Typography
+    variant="h5"
+    sx={{
+      mt: 1,
+      fontFamily: "Copperplate, serif",
+      letterSpacing: 2
+    }}
+    >
+      MESSAGE WALL
+    </Typography>
+  </Box>
+  <Box 
+      sx={{
+        display:"flex",
+        flexDirection:"column",
+        alignItems:"center",
+        gap:3,
+        width: "100%",
+        maxWidth: 400,
+        margin: "0 auto"
+      }}
+      >
       {/* --- Controls --- */}
       <Box className="flex gap-4 mb-4 items-center mt-10">
         {/* Draw/Erase Toggle */}
@@ -86,43 +122,111 @@ export default function Page() {
           onChange={handleModeChange}
           aria-label="draw or erase mode"
         >
-          <ToggleButton value="draw" aria-label="draw mode">
+
+          <ToggleButton 
+          value="draw" 
+          aria-label="draw mode"
+          sx={{
+            backgroundColor: "transparent",
+            color: "white",
+            border: "1px solid white",
+            "&.Mui-selected": {
+            backgroundColor: "white", 
+            color: "black",
+            border: "1px solid white",
+          },
+          "&.Mui-selected:hover": {
+            backgroundColor: "white",
+          },
+          "&:hover": {
+            backgroundColor: "transparent",
+          },
+          }}
+          >
             <CreateIcon />
           </ToggleButton>
-          <ToggleButton value="erase" aria-label="erase mode">
+
+          <ToggleButton 
+          value="erase" 
+          aria-label="erase mode"
+          sx={{
+            backgroundColor: "transparent",
+            color: "white",
+            border: "1px solid white",
+            "&.Mui-selected": {
+            backgroundColor: "white", // light gray when active
+            color: "black",
+            border: "1px solid white",
+          },
+          "&.Mui-selected:hover": {
+            backgroundColor: "white",
+          },
+          "&:hover": {
+            backgroundColor: "transparent",
+          },
+          }}
+          >
             <AutoFixHighIcon />
           </ToggleButton>
         </ToggleButtonGroup>
-
+      <Box className="flex gap-2 items-center">
         {/* Color Button - only show when in draw mode */}
         {drawMode === "draw" && (
-          <Button
-            variant="outlined"
-            onClick={() => colorInputRef.current?.click()}
-            startIcon={<ColorLensIcon />}
-          >
-            Color
-          </Button>
-        )}
+          <Box sx={{ position: "relative", display:"inline-block "}}>
+          <IconButton
+            onClick={() => {
+              console.log("color clicked");
+              colorInputRef.current?.click();}}
+            sx = {{
+              backgroundColor: "white",
+              color: "black",
+              width: "48px",
+              height: "48px",
+              borderRadius: 1,
+              "&.hover": { backgroundColor: "white" },
+            }}
+            >
+
+            <ColorLensIcon />
+          </IconButton>
 
         {/* Hidden Color Input */}
         <input
           ref={colorInputRef}
           type="color"
           value={brushColor}
-          onChange={handleColorChange}
-          style={{ display: "none" }}
+          onChange={(e) => {
+            console.log("new color", e.target.value);
+            handleColorChange(e);
+          }}
+          style={{ 
+            opacity: 0,
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            cursor: "pointer",
+            }}
         />
+      </Box>
+        )}
 
         {/* Brush Size Button */}
-        <Button
-          variant="outlined"
+        <IconButton
           aria-describedby={id}
           onClick={handleSizeClick}
-          startIcon={<BrushIcon />}
+          sx = {{
+            backgroundColor: "white",
+            color: "black",
+            width: "48px",
+            height: "48px",
+            borderRadius: 1,
+            "&:hover": { backgroundColor: "white" },
+          }}
         >
-          Size
-        </Button>
+          <CommitIcon sx={{ fontSize: 34 }}/>
+        </IconButton>
 
         {/* Brush Size Popover */}
         <Popover
@@ -151,29 +255,65 @@ export default function Page() {
           </Box>
         </Popover>
       </Box>
+    </Box>
 
       {/* --- Canvas --- */}
-      <Box border="1px solid #ccc" borderRadius={2}>
+      <Box 
+      sx={{
+        width: "100%",
+        maxWidth: 350,
+        aspectRatio: "1 / 1",
+      }}
+      border="1px solid #ccc" >
         <CanvasDraw
           ref={canvasRef}
           brushRadius={brushRadius}
           brushColor={drawMode === "draw" ? brushColor : "#FFFFFF"}
           lazyRadius={0}
-          canvasWidth={350}
-          canvasHeight={350}
+          canvasWidth={undefined}
+          canvasHeight={undefined}
           hideGrid={true}
+          style={{width:"100%", height:"100%"}}
         />
       </Box>
 
       {/* --- Action Buttons --- */}
-      <div className="mt-4 flex gap-2">
-        <Button variant="outlined" onClick={handleReset}>
-          Reset
+      <Box className="mt-4 flex gap-2">
+        <IconButton 
+        onClick={handleReset}
+        sx={{
+          border: "2px solid white",
+          color: "white", 
+          backgroundColor: "transparent",
+          width: "48px",
+          height: "48px",
+          borderRadius: 1,
+          "&:hover": {
+            backgroundColor: "transparent",
+            border: "2px solid white",
+          },
+        }}
+        >
+          <RestartAltIcon />
+        </IconButton>
+
+
+        <Button 
+        variant="contained" 
+        onClick={handleSave}
+        sx = {{
+          backgroundColor: "white",
+          color: "black",
+          borderRadius: 1.5,
+          "&:hover": {
+            backgroundColor: "white",
+          },
+        }}
+        >
+          <EastIcon sx={{ fontsize: 32 }} />
         </Button>
-        <Button variant="contained" color="primary" onClick={handleSave}>
-          Submit
-        </Button>
-      </div>
+      </Box>
+  </Box>
     </div>
   );
 }
