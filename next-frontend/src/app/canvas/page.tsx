@@ -1,5 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import CanvasDraw from "react-canvas-draw";
 import {
   Button,
@@ -25,7 +26,20 @@ import CommitIcon from '@mui/icons-material/Commit';
 import axios from "axios";
 import { isNullOrUndefined } from "node:util";
 
+function isEmptySaveData(saveDataString: string): boolean {
+  try {
+    const data = JSON.parse(saveDataString);
+    const lines = Array.isArray(data?.lines) ? data.lines : [];
+        return lines.length === 0 || lines.every((ln: any) => !Array.isArray(ln?.points) || ln.points.length < 2);
+  } catch {
+    // if it isn't valid JSON, treat as empty to be safe
+    return true;
+  }
+}
+
 export default function Page() {
+  const router = useRouter()
+  const [hasContent, setHasContent] = useState(false);
   const canvasRef = useRef<CanvasDraw | null>(null);
   const colorInputRef = useRef<HTMLInputElement | null>(null);
   const [brushColor, setBrushColor] = useState("#000000");
@@ -46,13 +60,34 @@ export default function Page() {
   const open = Boolean(anchorEl);
   const id = open ? "brush-size-popover" : undefined;
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!canvasRef.current) return;
     const saveData = canvasRef.current.getSaveData();
-    axios.post(`${backendBaseURL}/submit`, {
-      canvas: saveData,
-    });
-    canvasRef.current.clear();
+    if (isEmptySaveData(saveData)) {
+      return;
+    }
+    let enriched = saveData;
+    try {
+      const obj = JSON.parse(saveData);
+      obj.devicePixelRatio = window.devicePixelRatio || 1;
+      enriched = JSON.stringify(obj);
+    }
+    catch {
+    }
+    
+    try {
+    await axios.post(`${backendBaseURL}/submit`, {
+      canvas: saveData    });
+
+    sessionStorage.setItem("lastCanvas", saveData);
+    router.push("/success");
+    }
+    catch (err) {
+      console.error("submit failed:", err);
+    }
+    finally {
+      setTimeout(() => canvasRef.current?.clear(), 0);
+    }
   };
 
   const handleReset = () => {
@@ -274,6 +309,12 @@ export default function Page() {
           canvasHeight={undefined}
           hideGrid={true}
           style={{width:"100%", height:"100%"}}
+          onChange={() => {
+            const sd = canvasRef.current?.getSaveData();
+            if (sd) {
+              setHasContent(!isEmptySaveData(sd));
+            }
+          }}
         />
       </Box>
 
