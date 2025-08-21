@@ -5,9 +5,16 @@
   },
   "dependencies": {
     "@datastructures-js/deque": "^1.0.5",
-    "hono": "^4.9.0"
+    "hono": "^4.9.2"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/node": "^24.3.0"
+  },
+  "module": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "peerDependencies": {
+    "typescript": "^5.9.2"
   }
 }

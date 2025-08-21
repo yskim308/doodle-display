@@ -52,12 +52,12 @@ app.get("/getAll", async (c: Context) => {
 app.get("/get/:id", async (c: Context) => {
   const id = c.req.param("id");
   const objectList = circularArray.getAll(); 
-  const image = objectList.find(obj) => obj.imageId === id);
+  const image = objectList.find((obj) => obj.imageId === id);
 
   if (!image) {
-    return circularArray.text("Image not found", 404);
+    return c.text("Image not found", 404);
   }
-  return circularArray.json(image, 200);
+  return c.json(image, 200);
 });
 
 // settings for server
