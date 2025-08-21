@@ -47,7 +47,12 @@ app.post("/submit", async (c: Context) => {
 });
 
 app.get("/getAll", async (c: Context) => {
-  const objectList = circularArray.getAll();
+  const objectList = circularArray.getAll().map((img) => ({
+    imageId: img.imageId,
+    json: img.json,
+    png: img.png,
+    canvas: img.json,
+  }));
   return c.json(objectList);
 });
 
@@ -58,7 +63,7 @@ app.get("/view/:id", async (c: Context) => {
 
   if (!image) return c.text("Image not found", 404);
 
-  return c.json({ imageId: id, canvas: image.json });
+  return c.json({ imageId: id, json: image.json, png: image.png, canvas: image.json });
 });
 
 // for static success page (/success)
