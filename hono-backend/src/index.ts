@@ -38,12 +38,26 @@ app.post("/submit", async (c: Context) => {
     canvas: canvas,
   };
   circularArray.insert(imageObject);
-  return c.text("inserted succesfully", 200);
+  
+  return c.json({
+    message: "inserted succesfully",
+    imageID: uniqueId,}, 200);
 });
 
 app.get("/getAll", async (c: Context) => {
   const objectList = circularArray.getAll();
   return c.json(objectList);
+});
+
+app.get("/get/:id", async (c: Context) => {
+  const id = c.req.param("id");
+  const objectList = circularArray.getAll(); 
+  const image = objectList.find(obj) => obj.imageId === id);
+
+  if (!image) {
+    return circularArray.text("Image not found", 404);
+  }
+  return circularArray.json(image, 200);
 });
 
 // settings for server
