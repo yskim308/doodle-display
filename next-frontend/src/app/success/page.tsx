@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Box, Button, Paper, Stack, Typography } from "@mui/material";
+import { Box, Button, Paper, Stack, Typography, IconButton } from "@mui/material";
 import CanvasDraw from "react-canvas-draw";
+import SaveAltIcon from '@mui/icons-material/SaveAlt';
 
 /** Helper: load an image asset (e.g., /watermark.png) */
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -165,7 +166,6 @@ export default function SuccessPage() {
         console.warn("Watermark not applied:", e);
       }
     
-      // 🔽 Don't forget to trigger the download
   const url = out.toDataURL("image/png");
   const a = document.createElement("a");
   a.href = url;
@@ -193,7 +193,6 @@ export default function SuccessPage() {
           maxWidth: 720,
           bgcolor: "black",
           color: "white",
-          border: "1px solid #222",
         }}
       >
         <Stack gap={2} alignItems="center">
@@ -219,23 +218,40 @@ export default function SuccessPage() {
           {saveData ? (
             <>
               {/* Read-only preview (white background so black strokes are visible) */}
-              <Box sx={{ border: "1px solid #333", p: 1, borderRadius: 1 }}>
+              <Box sx={{ 
+                width: "100%",
+                maxWidth: 350,
+                aspectRatio: "1/1", 
+                border: "1px solid #fff", 
+                p: 0}}>
                 <canvas
                   ref = {previewRef}
                   style={{ maxWidth: "100%", height: "auto", display: "block"}}
                 />
               </Box>
 
-              <Button variant="contained" onClick={handleDownload}>
-                Save image (PNG)
+              <Button
+                size="large"
+                onClick={handleDownload}
+                sx={{
+          border: "2px solid white",
+          color: "white", 
+          backgroundColor: "transparent",
+          borderRadius: 1.5,
+          px: 6,
+          "&:hover": {
+            backgroundColor: "transparent",
+            border: "2px solid white",
+          },
+        }}>
+           <SaveAltIcon/>
               </Button>
-
               {/* hidden export canvas used for PNG generation */}
               <canvas ref={exportCanvasRef} style={{ display: "none" }} />
             </>
           ) : (
             <Typography color="gray" textAlign="center">
-              No recent drawing found. Please go back and submit a drawing.
+            
             </Typography>
           )}
         </Stack>
