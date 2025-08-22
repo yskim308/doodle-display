@@ -1,5 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
+import { Eraser } from 'lucide-react';
 import { useRouter } from "next/navigation";
 import CanvasDraw from "react-canvas-draw";
 import {
@@ -178,7 +179,7 @@ export default function Page() {
                 },
               }}
             >
-              <AutoFixHighIcon />
+              <Eraser />
             </ToggleButton>
           </ToggleButtonGroup>
           <Box className="flex gap-2 items-center">

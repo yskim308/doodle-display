@@ -220,7 +220,7 @@ export default function SuccessPage() {
             textAlign="center"
             sx={{ mt: 1, fontFamily: "Copperplate, serif", letterSpacing: 2 }}
           >
-            Submitted! Check your message on the LED Screen.
+            画面でメッセージをご確認ください。<br />Check out your message on the screen!
           </Typography>
 
           {saveData ? (
