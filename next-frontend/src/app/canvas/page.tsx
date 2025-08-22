@@ -121,14 +121,13 @@ export default function Page() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: 3,
           width: "100%",
           maxWidth: 400,
           margin: "0 auto",
         }}
       >
         {/* --- Controls --- */}
-        <Box className="flex gap-4 mb-4 items-center mt-10">
+        <Box className="flex gap-4 mb-4 items-center">
           {/* Draw/Erase Toggle */}
           <ToggleButtonGroup
             value={drawMode}
