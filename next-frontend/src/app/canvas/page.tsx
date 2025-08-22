@@ -1,5 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import CanvasDraw from "react-canvas-draw";
 import {
   Button,
@@ -22,8 +23,22 @@ import RestartAltIcon from '@mui/icons-material/RestartAlt'; //restart
 import LogoutIcon from '@mui/icons-material/Logout'; // send
 import BubbleChartIcon from '@mui/icons-material/BubbleChart'; // size
 import axios from "axios";
+import { isNullOrUndefined } from "node:util";
+
+function isEmptySaveData(saveDataString: string): boolean {
+  try {
+    const data = JSON.parse(saveDataString);
+    const lines = Array.isArray(data?.lines) ? data.lines : [];
+        return lines.length === 0 || lines.every((ln: any) => !Array.isArray(ln?.points) || ln.points.length < 2);
+  } catch {
+    // if it isn't valid JSON, treat as empty to be safe
+    return true;
+  }
+}
 
 export default function Page() {
+  const router = useRouter()
+  const [hasContent, setHasContent] = useState(false);
   const canvasRef = useRef<CanvasDraw | null>(null);
   const colorInputRef = useRef<HTMLInputElement | null>(null);
   const [brushColor, setBrushColor] = useState("#000000");
@@ -44,31 +59,35 @@ export default function Page() {
   const open = Boolean(anchorEl);
   const id = open ? "brush-size-popover" : undefined;
 
-const handleSave = async () => {
-  if (!canvasRef.current) return;
+  const handleSave = async () => {
+    if (!canvasRef.current) return;
+    const saveData = canvasRef.current.getSaveData();
+    if (isEmptySaveData(saveData)) {
+      return;
+    }
+    let enriched = saveData;
+    try {
+      const obj = JSON.parse(saveData);
+      obj.devicePixelRatio = window.devicePixelRatio || 1;
+      enriched = JSON.stringify(obj);
+    }
+    catch {
+    }
+    
+    try {
+    await axios.post(`${backendBaseURL}/submit`, {
+      canvas: saveData    });
 
-  // 1. Animated JSON (for /view)
-  const saveData = canvasRef.current.getSaveData();
-
-  // 2. Flat PNG (for /success)
-  // TS doesn’t know about .canvasContainer, so we cast to `any`
-  const canvasEl = (canvasRef.current as any).canvasContainer
-    .children[1] as HTMLCanvasElement;
-  const pngData = canvasEl.toDataURL("image/png");
-
-  try {
-    const res = await axios.post(`${backendBaseURL}/submit`, {
-      json: saveData,
-      png: pngData,
-    });
-
-    console.log("Saved successfully", res.data);
-    canvasRef.current.clear();
-  } catch (err) {
-    console.error("Error saving", err);
-  }
-};
-
+    sessionStorage.setItem("lastCanvas", saveData);
+    router.push("/success");
+    }
+    catch (err) {
+      console.error("submit failed:", err);
+    }
+    finally {
+      setTimeout(() => canvasRef.current?.clear(), 0);
+    }
+  };
 
   const handleReset = () => {
     if (!canvasRef.current) return;
@@ -179,6 +198,13 @@ const handleSave = async () => {
           canvasWidth={350}
           canvasHeight={350}
           hideGrid={true}
+          style={{width:"100%", height:"100%"}}
+          onChange={() => {
+            const sd = canvasRef.current?.getSaveData();
+            if (sd) {
+              setHasContent(!isEmptySaveData(sd));
+            }
+          }}
         />
       </Box>
 

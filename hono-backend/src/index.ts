@@ -3,7 +3,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import circularArray from "./CircularArray";
 import type { Context } from "hono";
-import type { Canvas, ImageObject } from "./types";
+import type { ImageObject } from "./types";
 
 const app = new Hono();
 
