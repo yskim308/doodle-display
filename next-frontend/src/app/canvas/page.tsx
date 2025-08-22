@@ -112,7 +112,41 @@ export default function Page() {
   };
 
   return (
-    <div className="flex flex-col items-center h-full w-full p-4">
+  <div className="flex flex-col items-center min-h-screen w-full p-4 bg-black text-white overflow-y-auto">
+  <Box
+    sx={{
+      display:"flex",
+      flexDirection: "column",
+      alignItems: "center",
+      mt: 2
+    }}>
+    <img
+    src="/logo.png"
+    alt="Logo"
+    style={{ width: "240px", height: "auto" }}
+    />
+    <Typography
+    variant="h5"
+    sx={{
+      mt: 1,
+      fontFamily: "Copperplate, serif",
+      letterSpacing: 2
+    }}
+    >
+      MESSAGE WALL
+    </Typography>
+  </Box>
+  <Box 
+      sx={{
+        display:"flex",
+        flexDirection:"column",
+        alignItems:"center",
+        gap:3,
+        width: "100%",
+        maxWidth: 400,
+        margin: "0 auto"
+      }}
+      >
       {/* --- Controls --- */}
       <Box className="flex gap-4 mb-4 items-center mt-10">
         {/* Draw/Erase Toggle */}
