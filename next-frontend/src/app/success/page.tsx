@@ -1,9 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Box, Button, Paper, Stack, Typography, IconButton } from "@mui/material";
+import {
+  Box,
+  Button,
+  Paper,
+  Stack,
+  Typography,
+  IconButton,
+} from "@mui/material";
 import CanvasDraw from "react-canvas-draw";
-import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import SaveAltIcon from "@mui/icons-material/SaveAlt";
 
 /** Helper: load an image asset (e.g., /watermark.png) */
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -21,12 +28,15 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 function renderSaveDataToCanvas(
   canvas: HTMLCanvasElement,
   saveDataString: string,
-  opts: { width?: number; height?: number; background?: "transparent" | string } = {}
+  opts: {
+    width?: number;
+    height?: number;
+    background?: "transparent" | string;
+  } = {},
 ) {
   const data = JSON.parse(saveDataString);
-const cssWidth  = (opts.width  ?? Number(data.width))  || 640;
-const cssHeight = (opts.height ?? Number(data.height)) || 640;
-
+  const cssWidth = (opts.width ?? Number(data.width)) || 640;
+  const cssHeight = (opts.height ?? Number(data.height)) || 640;
 
   const dpr = Number(data.devicePixelRatio) || window.devicePixelRatio || 1;
   const background = opts.background ?? "#ffffff";
@@ -40,10 +50,10 @@ const cssHeight = (opts.height ?? Number(data.height)) || 640;
   ctx.setTransform(1, 0, 0, 1, 0, 0);
 
   const srcW = Number(data.width) || cssWidth;
-  const srcH = Number(data.height) || cssHeight; 
+  const srcH = Number(data.height) || cssHeight;
 
   const scale = Math.min(cssWidth / srcW, cssHeight / srcH);
-  
+
   ctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
 
   ctx.save();
@@ -77,7 +87,10 @@ const cssHeight = (opts.height ?? Number(data.height)) || 640;
 /** Compute tight bounding box of non-transparent pixels */
 function computeTightBBox(ctx: CanvasRenderingContext2D, w: number, h: number) {
   const img = ctx.getImageData(0, 0, w, h).data;
-  let minX = w, minY = h, maxX = -1, maxY = -1;
+  let minX = w,
+    minY = h,
+    maxX = -1,
+    maxY = -1;
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
       const i = (y * w + x) * 4;
@@ -103,19 +116,24 @@ export default function SuccessPage() {
     if (sd) setSaveData(sd);
   }, []);
 
-    useEffect(() => {
+  useEffect(() => {
     (async () => {
       if (!saveData || !previewRef.current) return;
 
       // 1) paint the drawing onto the preview canvas (white bg, DPR-scaled)
-      renderSaveDataToCanvas(previewRef.current, saveData, { width: 640, height: 640, background: "#ffffff" });
+      renderSaveDataToCanvas(previewRef.current, saveData, {
+        width: 640,
+        height: 640,
+        background: "#ffffff",
+      });
 
       // 2) overlay the full-canvas watermark (uses @2x on Retina)
       try {
         const data = JSON.parse(saveData);
         const cssW = 640;
         const cssH = 640;
-        const dpr = Number(data.devicePixelRatio) || window.devicePixelRatio || 1;
+        const dpr =
+          Number(data.devicePixelRatio) || window.devicePixelRatio || 1;
 
         const wmSrc = dpr >= 2 ? "/watermark2x.png" : "/watermark.png";
         const wm = await loadImage(wmSrc);
@@ -157,22 +175,21 @@ export default function SuccessPage() {
       if (octx) {
         octx.save();
         octx.globalAlpha = 1;
-        octx.imageSmoothingEnabled = true; 
+        octx.imageSmoothingEnabled = true;
         octx.setTransform(dpr, 0, 0, dpr, 0, 0);
         octx.drawImage(watermark, 0, 0, cssW, cssH);
         octx.restore();
       }
-      } catch (e) {
-        console.warn("Watermark not applied:", e);
-      }
-    
-  const url = out.toDataURL("image/png");
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `message-wall-${Date.now()}.png`;
-  a.click();
-};
+    } catch (e) {
+      console.warn("Watermark not applied:", e);
+    }
 
+    const url = out.toDataURL("image/png");
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `message-wall-${Date.now()}.png`;
+    a.click();
+  };
 
   return (
     <Box
@@ -196,37 +213,29 @@ export default function SuccessPage() {
         }}
       >
         <Stack gap={2} alignItems="center">
-          {/* Logo at the top */}
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <img
-              src="/logo.png"
-              alt="Logo"
-              style={{ width: "240px", height: "auto" }}
-            />
-            <Typography
-              variant="h5"
-              sx={{ mt: 1, fontFamily: "Copperplate, serif", letterSpacing: 2 }}
-            >
-              MESSAGE WALL
-            </Typography>
-          </Box>
-
-          <Typography variant="subtitle1" textAlign="center" sx={{ mt: 1, fontFamily: "Copperplate, serif", letterSpacing: 2}}>
+          <Typography
+            variant="subtitle1"
+            textAlign="center"
+            sx={{ mt: 1, fontFamily: "Copperplate, serif", letterSpacing: 2 }}
+          >
             Submitted! Check your message on the LED Screen.
           </Typography>
 
           {saveData ? (
             <>
               {/* Read-only preview (white background so black strokes are visible) */}
-              <Box sx={{ 
-                width: "100%",
-                maxWidth: 350,
-                aspectRatio: "1/1", 
-                border: "1px solid #fff", 
-                p: 0}}>
+              <Box
+                sx={{
+                  width: "100%",
+                  maxWidth: 350,
+                  aspectRatio: "1/1",
+                  border: "1px solid #fff",
+                  p: 0,
+                }}
+              >
                 <canvas
-                  ref = {previewRef}
-                  style={{ maxWidth: "100%", height: "auto", display: "block"}}
+                  ref={previewRef}
+                  style={{ maxWidth: "100%", height: "auto", display: "block" }}
                 />
               </Box>
 
@@ -234,25 +243,24 @@ export default function SuccessPage() {
                 size="large"
                 onClick={handleDownload}
                 sx={{
-          border: "2px solid white",
-          color: "white", 
-          backgroundColor: "transparent",
-          borderRadius: 1.5,
-          px: 6,
-          "&:hover": {
-            backgroundColor: "transparent",
-            border: "2px solid white",
-          },
-        }}>
-           <SaveAltIcon/>
+                  border: "2px solid white",
+                  color: "white",
+                  backgroundColor: "transparent",
+                  borderRadius: 1.5,
+                  px: 6,
+                  "&:hover": {
+                    backgroundColor: "transparent",
+                    border: "2px solid white",
+                  },
+                }}
+              >
+                <SaveAltIcon />
               </Button>
               {/* hidden export canvas used for PNG generation */}
               <canvas ref={exportCanvasRef} style={{ display: "none" }} />
             </>
           ) : (
-            <Typography color="gray" textAlign="center">
-            
-            </Typography>
+            <Typography color="gray" textAlign="center"></Typography>
           )}
         </Stack>
       </Paper>
