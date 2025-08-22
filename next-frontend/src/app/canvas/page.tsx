@@ -113,7 +113,7 @@ export default function Page() {
   };
 
   return (
-    <div className="flex flex-col items-center h-full w-full p-4 bg-black text-white">
+  <div className="flex flex-col items-center min-h-screen w-full p-4 bg-black text-white overflow-y-auto">
   <Box
     sx={{
       display:"flex",
