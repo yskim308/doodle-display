@@ -195,7 +195,8 @@ export default function SuccessPage() {
     <Box
       sx={{
         minHeight: "100vh",
-        p: 3,
+        pb: 3,
+        px: 3,
         display: "flex",
         justifyContent: "center",
         bgcolor: "black",
@@ -205,7 +206,8 @@ export default function SuccessPage() {
       <Paper
         elevation={3}
         sx={{
-          p: 3,
+          pb: 3,
+          px: 3,
           width: "100%",
           maxWidth: 720,
           bgcolor: "black",
