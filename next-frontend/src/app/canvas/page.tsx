@@ -14,6 +14,7 @@ import {
   ToggleButtonGroup,
 } from "@mui/material";
 import Edit from "@mui/icons-material/Edit";
+
 import FormatColorFill from "@mui/icons-material/FormatColorFill";
 import ColorLensIcon from "@mui/icons-material/ColorLens"; // color change
 import BrushIcon from "@mui/icons-material/Brush"; //paintbrush
@@ -22,7 +23,7 @@ import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh"; //eraser
 import RestartAltIcon from "@mui/icons-material/RestartAlt"; //restart
 import EastIcon from "@mui/icons-material/East";
 import BubbleChartIcon from "@mui/icons-material/BubbleChart"; // size
-import CommitIcon from "@mui/icons-material/Commit";
+
 import axios from "axios";
 import { isNullOrUndefined } from "node:util";
 
@@ -240,6 +241,7 @@ export default function Page() {
               <CommitIcon sx={{ fontSize: 34 }} />
             </IconButton>
 
+
             {/* Brush Size Popover */}
             <Popover
               id={id}
@@ -268,6 +270,7 @@ export default function Page() {
               </Box>
             </Popover>
           </Box>
+
         </Box>
 
         {/* --- Canvas --- */}

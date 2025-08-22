@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useMemo } from "react";
 import { Card, CardContent, Box } from "@mui/material";
 import CanvasDraw from "react-canvas-draw";
@@ -18,9 +17,11 @@ export interface DrawingCardProps {
 export const DrawingCard = React.memo(function DrawingCard({
   image,
 }: DrawingCardProps) {
-  const normalizedSaveData = useMemo(
-    () => normalizeSaveDataString(image.canvas),
-    [image.canvas],
+  const rawSaveData = image.json ?? image.canvas ?? "";
+
+  const normalizedSaveData = useMemo( 
+    () => normalizeSaveDataString(rawSaveData),
+    [rawSaveData],
   );
 
   return (
