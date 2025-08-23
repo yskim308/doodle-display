@@ -11,6 +11,9 @@ export default function Home() {
       <div>
         go to <a href="/display">/display</a> for TV display
       </div>
+      <div>
+        go to <a href="/display2">/display2</a> for floating drawings
+      </div>
     </div>
   );
 }

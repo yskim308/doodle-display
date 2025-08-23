@@ -32,16 +32,6 @@ export default function RootLayout({
             alt="Logo"
             style={{ width: "240px", height: "auto" }}
           />
-          <Typography
-            variant="h5"
-            sx={{
-              mt: 1,
-              fontFamily: "Copperplate, serif",
-              letterSpacing: 2,
-            }}
-          >
-            MESSAGE WALL
-          </Typography>
         </Box>
         {children}
       </body>
