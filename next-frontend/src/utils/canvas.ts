@@ -47,19 +47,37 @@ export function renderSaveDataToCanvas(
   opts: RenderOptions = {}
 ) {
   const data = JSON.parse(normalizeSaveDataString(saveDataString));
-  const width = opts.width ?? (data.width ?? DEFAULT_WIDTH);
-  const height = opts.height ?? (data.height ?? DEFAULT_HEIGHT);
+  const originalWidth = data.width ?? DEFAULT_WIDTH;
+  const originalHeight = data.height ?? DEFAULT_HEIGHT;
+  const targetWidth = opts.width ?? originalWidth;
+  const targetHeight = opts.height ?? originalHeight;
   const background = opts.background ?? "#ffffff";
 
-  canvas.width = width;
-  canvas.height = height;
+  canvas.width = targetWidth;
+  canvas.height = targetHeight;
 
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
 
+  // Calculate scale factors to fit the drawing within the target dimensions
+  const scaleX = targetWidth / originalWidth;
+  const scaleY = targetHeight / originalHeight;
+  const scale = Math.min(scaleX, scaleY); // Maintain aspect ratio
+  
+  // Calculate centering offsets
+  const scaledWidth = originalWidth * scale;
+  const scaledHeight = originalHeight * scale;
+  const offsetX = (targetWidth - scaledWidth) / 2;
+  const offsetY = (targetHeight - scaledHeight) / 2;
+
   // background
   ctx.fillStyle = background;
-  ctx.fillRect(0, 0, width, height);
+  ctx.fillRect(0, 0, targetWidth, targetHeight);
+
+  // Apply scaling and centering transformation
+  ctx.save();
+  ctx.translate(offsetX, offsetY);
+  ctx.scale(scale, scale);
 
   // draw lines
   for (const line of data.lines ?? []) {
@@ -78,5 +96,8 @@ export function renderSaveDataToCanvas(
     }
     ctx.stroke();
   }
+
+  // Restore the context
+  ctx.restore();
 }
 
