@@ -8,6 +8,9 @@ export default function Home() {
       <div>
         go to <a href="/view">/view</a> to view
       </div>
+      <div>
+        go to <a href="/display">/display</a> for TV display
+      </div>
     </div>
   );
 }
