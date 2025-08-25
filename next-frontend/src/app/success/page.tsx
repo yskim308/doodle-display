@@ -221,7 +221,7 @@ export default function SuccessPage() {
             textAlign="center"
             sx={{ mt: 1, fontFamily: "Copperplate, serif", letterSpacing: 2 }}
           >
-            画面でメッセージをご確認ください。<br />Check out your message on the screen!
+            画面でメッセージをご確認ください。<br />Check out your message <br />on the screen!
           </Typography>
 
           {saveData ? (
