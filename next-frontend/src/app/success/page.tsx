@@ -8,9 +8,7 @@ import {
   Paper,
   Stack,
   Typography,
-  IconButton,
 } from "@mui/material";
-import CanvasDraw from "react-canvas-draw";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 
 /** Helper: load an image asset (e.g., /watermark.png) */
