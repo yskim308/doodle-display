@@ -11,7 +11,6 @@ const app = new Hono();
 const frontendBase = process.env.FRONTEND_BASE_URL;
 let origin: string[] = ["http://localhost:3000"];
 if (frontendBase) origin.push(frontendBase);
-// Temporarily add the new frontend domain
 origin.push("https://doodle-display-1.onrender.com");
 app.use(
   "/*",
@@ -49,8 +48,9 @@ app.get("/getAll", async (c: Context) => {
 });
 
 // settings for server
+const port = parseInt(process.env.PORT || '4000', 10);
 serve({
   fetch: app.fetch,
-  port: 4000,
+  port: port, 
 });
-console.log("running on port 4000");
+console.log("running on port ${port}");
