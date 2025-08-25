@@ -64,6 +64,7 @@ export default function Page() {
     if (!canvasRef.current) return;
     const saveData = canvasRef.current.getSaveData();
     if (isEmptySaveData(saveData)) {
+      console.log("Canvas is empty, not saving");
       return;
     }
     let enriched = saveData;
@@ -74,12 +75,16 @@ export default function Page() {
     } catch {}
 
     try {
+      console.log("Submitting drawing to backend...");
       await axios.post(`${backendBaseURL}/submit`, {
         canvas: saveData,
       });
+      console.log("Backend submission successful");
 
       sessionStorage.setItem("lastCanvas", saveData);
+      console.log("About to redirect to /success");
       router.push("/success");
+      console.log("Redirect called");
     } catch (err) {
       console.error("submit failed:", err);
     } finally {

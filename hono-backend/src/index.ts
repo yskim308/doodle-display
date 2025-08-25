@@ -11,6 +11,8 @@ const app = new Hono();
 const frontendBase = process.env.FRONTEND_BASE_URL;
 let origin: string[] = ["http://localhost:3000"];
 if (frontendBase) origin.push(frontendBase);
+// Temporarily add the new frontend domain
+origin.push("https://doodle-display-1.onrender.com");
 app.use(
   "/*",
   cors({
