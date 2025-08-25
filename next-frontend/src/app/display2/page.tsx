@@ -40,7 +40,7 @@ export default function Display2Page() {
   // Track which canvases have been initialized to prevent multiple renders
   const initializedCanvases = useRef<Set<string>>(new Set());
   
-  // Screen dimensions for positioning - optimized for 85" TV (16:9 ratio)
+  // Screen dimensions for positioning
   const [screenDimensions, setScreenDimensions] = useState({ width: 1920, height: 1080 });
 
   // Function to animate drawing stroke by stroke
@@ -88,8 +88,23 @@ export default function Display2Page() {
           ctx.lineJoin = "round";
           ctx.lineCap = "round";
           ctx.strokeStyle = line.brushColor ?? "#111827";
-          ctx.lineWidth = line.brushRadius ?? 2;
-
+          
+          // Try multiple possible brush radius properties
+          const brushRadius = line.brushRadius ?? (line as any).brushSize ?? (line as any).width ?? 2;
+          
+          // Set line width with 1.8x multiplier to compensate for thin strokes
+          ctx.lineWidth = brushRadius * 1.8;
+          
+          // Debug: Log brush scaling calculations
+          if (currentLine === 0) {
+            console.log('=== DISPLAY2 BRUSH SCALING DEBUG ===');
+            console.log('Original brush radius:', brushRadius, 'px');
+            console.log('Original canvas width:', originalWidth, 'px');
+            console.log('Target canvas width:', width, 'px');
+            console.log('Scale factor used:', scale.toFixed(3));
+            console.log('Line width with 1.8x multiplier:', (brushRadius * 1.8).toFixed(2), 'px');
+          }
+          
           ctx.beginPath();
           ctx.moveTo(pts[0].x, pts[0].y);
           
@@ -116,17 +131,52 @@ export default function Display2Page() {
   // Function to render static drawing
   const renderStaticDrawing = useCallback((canvas: HTMLCanvasElement, saveDataString: string, width: number, height: number) => {
     try {
+      const data = JSON.parse(normalizeSaveDataString(saveDataString));
+      const originalWidth = data.width ?? 300;
+      const originalHeight = data.height ?? 300;
+      
+      // Calculate scale factors to fit the drawing within the target dimensions
+      const scaleX = width / originalWidth;
+      const scaleY = height / originalHeight;
+      const scale = Math.min(scaleX, scaleY); // Maintain aspect ratio
+      
+      // Calculate centering offsets
+      const scaledWidth = originalWidth * scale;
+      const scaledHeight = originalHeight * scale;
+      const offsetX = (width - scaledWidth) / 2;
+      const offsetY = (height - scaledHeight) / 2;
+
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      // Clear the canvas first
+      // Clear canvas with transparent background
       ctx.clearRect(0, 0, width, height);
+
+      // Apply scaling and centering transformation
+      ctx.save();
+      ctx.translate(offsetX, offsetY);
+      ctx.scale(scale, scale);
+
+      const lines = data.lines ?? [];
       
-      renderSaveDataToCanvas(canvas, saveDataString, {
-        width,
-        height,
-        background: "transparent"
+      // Render all lines at once (no animation)
+      lines.forEach((line: any) => {
+        const pts = line.points ?? [];
+        
+        if (pts.length >= 2) {
+          ctx.lineJoin = "round";
+          ctx.lineCap = "round";
+          ctx.strokeStyle = line.brushColor ?? "#111827";
+          
+          // Try multiple possible brush radius properties
+          const brushRadius = line.brushRadius ?? (line as any).brushSize ?? (line as any).width ?? 2;
+          
+          // Set line width with 1.8x multiplier to compensate for thin strokes
+          ctx.lineWidth = brushRadius * 1.8;
+        }
       });
+      
+      ctx.restore();
     } catch (error) {
       console.error('Error rendering static drawing:', error);
     }
@@ -226,7 +276,7 @@ export default function Display2Page() {
           height,
           rotation: (Math.random() - 0.5) * 15, // Random rotation between -7.5 and 7.5 degrees
           timestamp: Date.now(),
-          animated: false // Mark as not animated initially
+          animated: false, // New drawings are not animated initially
         };
         
         setFloatingDrawings(prev => {

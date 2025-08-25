@@ -74,7 +74,7 @@ function renderSaveDataToCanvas(
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
     ctx.strokeStyle = line?.brushColor ?? "#111827";
-    ctx.lineWidth = line?.brushRadius ?? 2;
+    ctx.lineWidth = (line?.brushRadius ?? 2) * 1.8; // 1.8x multiplier to compensate for thin strokes
 
     ctx.beginPath();
     ctx.moveTo(pts[0].x, pts[0].y);

@@ -87,7 +87,28 @@ export function renderSaveDataToCanvas(
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
     ctx.strokeStyle = line.brushColor ?? "#111827";
-    ctx.lineWidth = line.brushRadius ?? 2;
+    
+    // Try multiple possible brush radius properties
+    const brushRadius = line.brushRadius ?? (line as any).brushSize ?? (line as any).width ?? 2;
+    
+    // CORRECT SCALING: Maintain the same brush-to-canvas ratio
+    // Calculate what percentage of the original canvas the brush occupied
+    const relativeBrushRatio = brushRadius / originalWidth;
+    // Apply that same ratio to the new canvas size
+    const scaledBrushRadius = relativeBrushRatio * targetWidth;
+    
+    ctx.lineWidth = scaledBrushRadius;
+    
+    // Debug: Log brush scaling calculations
+    if (data.lines.length > 0 && data.lines[0] === line) {
+      console.log('=== BRUSH SCALING DEBUG ===');
+      console.log('Original brush radius:', brushRadius, 'px');
+      console.log('Original canvas width:', originalWidth, 'px');
+      console.log('Brush-to-canvas ratio:', relativeBrushRatio.toFixed(4));
+      console.log('Target canvas width:', targetWidth, 'px');
+      console.log('Scaled brush radius:', scaledBrushRadius.toFixed(2), 'px');
+      console.log('Scale factor used:', (targetWidth / originalWidth).toFixed(3));
+    }
 
     ctx.beginPath();
     ctx.moveTo(pts[0].x, pts[0].y);
