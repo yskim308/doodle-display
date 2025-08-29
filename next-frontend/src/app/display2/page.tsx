@@ -81,9 +81,10 @@ export default function Display2Page() {
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     
-    // Reserve space for header and ensure drawings are fully visible
-    const headerHeight = 80; // Space for MESSAGE WALL text
-    const margin = 30; // Minimum margin from edges
+    // Adaptive margins and header height for different screen sizes
+    const isSmallScreen = Math.min(viewportWidth, viewportHeight) < 768;
+    const headerHeight = isSmallScreen ? 60 : 80; // Smaller header on mobile
+    const margin = isSmallScreen ? 20 : 30; // Smaller margins on mobile
     
     while (attempts < maxAttempts) {
       // Generate position within the full viewport, ensuring full visibility
@@ -120,13 +121,26 @@ export default function Display2Page() {
       if (!processedImages.has(latestImage.imageId)) {
         console.log('✅ New drawing detected in display2:', latestImage.imageId);
         
-        // Generate responsive dimensions that work with the TV container
-        const baseSize = Math.min(screenDimensions.width, screenDimensions.height) * 0.15; // Base 15% of screen
-        const sizeVariation = baseSize * 0.3; // 30% variation
-        const containerSize = baseSize + (Math.random() * sizeVariation - sizeVariation / 2); // Random variation around base size
+        // Generate responsive dimensions that work on ALL screen sizes
+        const minScreenDimension = Math.min(screenDimensions.width, screenDimensions.height);
         
-        const width = Math.max(containerSize, 120); // Minimum 120px width
-        const height = Math.max(containerSize, 120); // Minimum 120px height
+        // Adaptive sizing: smaller screens get smaller drawings
+        let baseSize;
+        if (minScreenDimension < 768) { // Mobile/tablet
+          baseSize = minScreenDimension * 0.12; // 12% of screen
+        } else if (minScreenDimension < 1200) { // Small desktop
+          baseSize = minScreenDimension * 0.13; // 13% of screen
+        } else { // Large desktop/TV
+          baseSize = minScreenDimension * 0.15; // 15% of screen
+        }
+        
+        const sizeVariation = baseSize * 0.2; // Reduced variation for smaller screens
+        const containerSize = baseSize + (Math.random() * sizeVariation - sizeVariation / 2);
+        
+        // Adaptive minimum sizes
+        const minSize = minScreenDimension < 768 ? 80 : 120; // Smaller minimum on mobile
+        const width = Math.max(containerSize, minSize);
+        const height = Math.max(containerSize, minSize);
         const position = generateRandomPosition(width, height);
         
         // Create new floating drawing
