@@ -35,7 +35,7 @@ export default function Display2Page() {
   const [processedImages, setProcessedImages] = useState<Set<string>>(new Set());
   
   // Maximum number of drawings to show at once
-  const MAX_FRAME_IMAGES = 30;
+  const MAX_FRAME_IMAGES = 20;
   
   // Track which canvases have been initialized to prevent multiple renders
   const initializedCanvases = useRef<Set<string>>(new Set());
