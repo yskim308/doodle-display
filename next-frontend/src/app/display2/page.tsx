@@ -139,18 +139,26 @@ export default function Display2Page() {
         };
         
 setFloatingDrawings((prev) => {
+  const startingCount = prev.length;
+  console.log(`🎨 DRAWING ${startingCount + 1} ADDED - Current drawings on screen: ${startingCount}`);
+  
   // 1) remove any existing item with the same id (prevents duplicates)
   const dedup = prev.filter(d => d.id !== newDrawing.id);
-
-  // 2) if full, drop the oldest (index 0), then append the new
-  const base = dedup.length >= MAX_FRAME_IMAGES ? dedup.slice(1) : dedup;
-
-  const next = [...base, newDrawing];
-
-  // (optional) debug
-  console.log('FIFO:', { before: prev.length, after: next.length });
-
-  return next;
+  
+  // 2) if original array was full, drop the oldest, then append the new
+  const shouldRemoveOldest = startingCount >= MAX_FRAME_IMAGES;
+  
+  if (shouldRemoveOldest) {
+    console.log(`🗑️  ARRAY FULL (${startingCount}/${MAX_FRAME_IMAGES}) - Removing oldest drawing!`);
+    const base = dedup.slice(1);
+    const next = [...base, newDrawing];
+    console.log(`✅ OLDEST POPPED - Now showing ${next.length} drawings`);
+    return next;
+  } else {
+    const next = [...dedup, newDrawing];
+    console.log(`➕ DRAWING ADDED - Now showing ${next.length} drawings`);
+    return next;
+  }
 });
         
         
