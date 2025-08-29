@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, useRef, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { useDrawingPolling } from "@/hooks/use-drawing-polling";
 import { normalizeSaveDataString } from "@/utils/canvas";
 import CanvasDraw from "react-canvas-draw";
@@ -31,11 +31,7 @@ export default function Display2Page() {
     setError,
   } = useDrawingPolling({ backendBase, defaultInterval: 3000 });
 
-  // Process save data the same way as drawing-card.tsx
-  const normalizedSaveData = useMemo(
-    () => images.length > 0 ? normalizeSaveDataString(images[images.length - 1].canvas) : "",
-    [images]
-  );
+
 
   const [floatingDrawings, setFloatingDrawings] = useState<FloatingDrawing[]>([]);
   const [processedImages, setProcessedImages] = useState<Set<string>>(new Set());
@@ -171,7 +167,7 @@ export default function Display2Page() {
         setProcessedImages(prev => new Set([...prev, latestImage.imageId]));
       }
     }
-  }, [images, processedImages, floatingDrawings, screenDimensions]);
+  }, [images, processedImages, screenDimensions]);
 
   return (
     <div className="w-full h-full bg-white overflow-hidden relative">
