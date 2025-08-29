@@ -216,12 +216,14 @@ export default function Display2Page() {
               width: drawing.width,
               height: drawing.height,
               transform: `rotate(${drawing.rotation}deg)`,
+              overflow: 'visible',
+              pointerEvents: 'none'
             }}
           >
             <CanvasDraw
               saveData={normalizeSaveDataString(drawing.image.canvas)}
-              canvasWidth={300}
-              canvasHeight={300}
+              canvasWidth={drawing.width}
+              canvasHeight={drawing.height}
               disabled
               hideGrid
               hideInterface
@@ -232,7 +234,8 @@ export default function Display2Page() {
               style={{
                 width: drawing.width,
                 height: drawing.height,
-                display: 'block'
+                display: 'block',
+                overflow: 'visible'
               }}
             />
           </div>
