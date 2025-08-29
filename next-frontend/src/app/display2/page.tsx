@@ -141,24 +141,12 @@ export default function Display2Page() {
         setFloatingDrawings(prev => {
           const updated = [...prev, newDrawing];
           
-          // If we exceed MAX_FRAME_IMAGES, remove the oldest drawing and reuse its position
+          // Simple FIFO: if we exceed MAX_FRAME_IMAGES, remove the oldest ones
           if (updated.length > MAX_FRAME_IMAGES) {
-            // Sort by timestamp and keep only the newest ones
-            const sorted = updated.sort((a, b) => a.timestamp - b.timestamp);
-            const trimmed = sorted.slice(-MAX_FRAME_IMAGES);
-            
-            // Get the removed drawing's position to reuse
-            const removedDrawing = sorted[0]; // Oldest drawing that was removed
-            
-            // Update the new drawing to use the removed drawing's position
-            const updatedWithReusedPosition = trimmed.map(d => 
-              d.id === newDrawing.id 
-                ? { ...d, x: removedDrawing.x, y: removedDrawing.y }
-                : d
-            );
-            
-            console.log(`Replaced oldest drawing at position (${removedDrawing.x}, ${removedDrawing.y}), now showing ${updatedWithReusedPosition.length} drawings`);
-            return updatedWithReusedPosition;
+            const sortedByTimestamp = updated.sort((a, b) => a.timestamp - b.timestamp);
+            const trimmed = sortedByTimestamp.slice(-MAX_FRAME_IMAGES);
+            console.log(`Removed oldest drawings, now showing ${trimmed.length} drawings`);
+            return trimmed;
           }
           
           return updated;
