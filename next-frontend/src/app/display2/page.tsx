@@ -138,19 +138,17 @@ export default function Display2Page() {
           timestamp: Date.now(),
         };
         
-        setFloatingDrawings(prev => {
-          const updated = [...prev, newDrawing];
-          
-          // Simple FIFO: if we exceed MAX_FRAME_IMAGES, remove the oldest ones
-          if (updated.length > MAX_FRAME_IMAGES) {
-            const sortedByTimestamp = updated.sort((a, b) => a.timestamp - b.timestamp);
-            const trimmed = sortedByTimestamp.slice(-MAX_FRAME_IMAGES);
-            console.log(`Removed oldest drawings, now showing ${trimmed.length} drawings`);
-            return trimmed;
+        setFloatingDrawings((prev) => {
+          // optional: de-dupe by id to avoid duplicates when polling races happen
+          const withoutDup = prev.filter(d => d.id !== newDrawing.id);
+        
+          if (withoutDup.length >= MAX_FRAME_IMAGES) {
+            // drop exactly the oldest one (FIFO) and append the new
+            return [...withoutDup.slice(-(MAX_FRAME_IMAGES - 1)), newDrawing];
           }
-          
-          return updated;
+          return [...withoutDup, newDrawing];
         });
+        
         
         setProcessedImages(prev => new Set([...prev, latestImage.imageId]));
       }
