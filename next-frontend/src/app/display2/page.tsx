@@ -110,12 +110,15 @@ export default function Display2Page() {
 
   // Handle new images
   useEffect(() => {
+    console.log('🔄 useEffect triggered - images.length:', images.length, 'processedImages.size:', processedImages.size);
+    
     if (images.length > 0) {
       const latestImage = images[images.length - 1];
+      console.log('📸 Latest image ID:', latestImage.imageId, 'Already processed?', processedImages.has(latestImage.imageId));
       
       // Check if this is a new image we haven't processed
       if (!processedImages.has(latestImage.imageId)) {
-        console.log('New drawing detected in display2:', latestImage.imageId);
+        console.log('✅ New drawing detected in display2:', latestImage.imageId);
         
         // Generate responsive dimensions that work with the TV container
         const baseSize = Math.min(screenDimensions.width, screenDimensions.height) * 0.15; // Base 15% of screen
@@ -138,28 +141,33 @@ export default function Display2Page() {
           timestamp: Date.now(),
         };
         
-setFloatingDrawings((prev) => {
-  const startingCount = prev.length;
-  console.log(`🎨 DRAWING ${startingCount + 1} ADDED - Current drawings on screen: ${startingCount}`);
-  
-  // 1) remove any existing item with the same id (prevents duplicates)
-  const dedup = prev.filter(d => d.id !== newDrawing.id);
-  
-  // 2) if original array was full, drop the oldest, then append the new
-  const shouldRemoveOldest = startingCount >= MAX_FRAME_IMAGES;
-  
-  if (shouldRemoveOldest) {
-    console.log(`🗑️  ARRAY FULL (${startingCount}/${MAX_FRAME_IMAGES}) - Removing oldest drawing!`);
-    const base = dedup.slice(1);
-    const next = [...base, newDrawing];
-    console.log(`✅ OLDEST POPPED - Now showing ${next.length} drawings`);
-    return next;
-  } else {
-    const next = [...dedup, newDrawing];
-    console.log(`➕ DRAWING ADDED - Now showing ${next.length} drawings`);
-    return next;
-  }
-});
+        setFloatingDrawings((prev) => {
+          const startingCount = prev.length;
+          console.log(`🎨 DRAWING ${startingCount + 1} ADDED - Current drawings on screen: ${startingCount}`);
+          
+          // Check if array is getting full
+          if (startingCount >= MAX_FRAME_IMAGES - 2) {
+            console.log(`⚠️  ARRAY GETTING FULL: ${startingCount}/${MAX_FRAME_IMAGES} - Will pop soon!`);
+          }
+          
+          // 1) remove any existing item with the same id (prevents duplicates)
+          const dedup = prev.filter(d => d.id !== newDrawing.id);
+          
+          // 2) if original array was full, drop the oldest, then append the new
+          const shouldRemoveOldest = startingCount >= MAX_FRAME_IMAGES;
+          
+          if (shouldRemoveOldest) {
+            console.log(`🗑️  ARRAY FULL (${startingCount}/${MAX_FRAME_IMAGES}) - Removing oldest drawing!`);
+            const base = dedup.slice(1);
+            const next = [...base, newDrawing];
+            console.log(`✅ OLDEST POPPED - Now showing ${next.length} drawings`);
+            return next;
+          } else {
+            const next = [...dedup, newDrawing];
+            console.log(`➕ DRAWING ADDED - Now showing ${next.length} drawings`);
+            return next;
+          }
+        });
         
         
         setProcessedImages(prev => new Set([...prev, latestImage.imageId]));
