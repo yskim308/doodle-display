@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useDrawingPolling } from "@/hooks/use-drawing-polling";
-import { normalizeSaveDataString, renderSaveDataToCanvas } from "@/utils/canvas";
+import { normalizeSaveDataString } from "@/utils/canvas";
+import CanvasDraw from "react-canvas-draw";
 import type { ImageObject } from "@/types/image-object";
 
 interface FloatingDrawing {
@@ -14,7 +15,6 @@ interface FloatingDrawing {
   height: number;
   rotation: number;
   timestamp: number;
-  animated: boolean; // Track if this drawing has already been animated
 }
 
 export default function Display2Page() {
@@ -31,156 +31,20 @@ export default function Display2Page() {
     setError,
   } = useDrawingPolling({ backendBase, defaultInterval: 3000 });
 
+  // Process save data the same way as drawing-card.tsx
+  const normalizedSaveData = useMemo(
+    () => images.length > 0 ? normalizeSaveDataString(images[images.length - 1].canvas) : "",
+    [images]
+  );
+
   const [floatingDrawings, setFloatingDrawings] = useState<FloatingDrawing[]>([]);
   const [processedImages, setProcessedImages] = useState<Set<string>>(new Set());
   
   // Maximum number of drawings to show at once
   const MAX_FRAME_IMAGES = 20;
   
-  // Track which canvases have been initialized to prevent multiple renders
-  const initializedCanvases = useRef<Set<string>>(new Set());
-  
   // Screen dimensions for positioning
   const [screenDimensions, setScreenDimensions] = useState({ width: 1920, height: 1080 });
-
-  // Function to animate drawing stroke by stroke
-  const animateDrawingStroke = useCallback((canvas: HTMLCanvasElement, saveDataString: string, width: number, height: number) => {
-    try {
-      const data = JSON.parse(normalizeSaveDataString(saveDataString));
-      const originalWidth = data.width ?? 300;
-      const originalHeight = data.height ?? 300;
-      
-      // Calculate scale factors to fit the drawing within the target dimensions
-      const scaleX = width / originalWidth;
-      const scaleY = height / originalHeight;
-      const scale = Math.min(scaleX, scaleY); // Maintain aspect ratio
-      
-      // Calculate centering offsets
-      const scaledWidth = originalWidth * scale;
-      const scaledHeight = originalHeight * scale;
-      const offsetX = (width - scaledWidth) / 2;
-      const offsetY = (height - scaledHeight) / 2;
-
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-
-      // Clear canvas with transparent background
-      ctx.clearRect(0, 0, width, height);
-
-      // Apply scaling and centering transformation
-      ctx.save();
-      ctx.translate(offsetX, offsetY);
-      ctx.scale(scale, scale);
-
-      const lines = data.lines ?? [];
-      let currentLine = 0;
-
-      const animateNextStroke = () => {
-        if (currentLine >= lines.length) {
-          ctx.restore();
-          return;
-        }
-
-        const line = lines[currentLine];
-        const pts = line.points ?? [];
-        
-        if (pts.length >= 2) {
-          ctx.lineJoin = "round";
-          ctx.lineCap = "round";
-          ctx.strokeStyle = line.brushColor ?? "#111827";
-          
-          // Try multiple possible brush radius properties
-          const brushRadius = line.brushRadius ?? (line as any).brushSize ?? (line as any).width ?? 2;
-          
-          // Set line width with 1.8x multiplier to compensate for thin strokes
-          ctx.lineWidth = brushRadius * 1.8;
-          
-          // Debug: Log brush scaling calculations
-          if (currentLine === 0) {
-            console.log('=== DISPLAY2 BRUSH SCALING DEBUG ===');
-            console.log('Original brush radius:', brushRadius, 'px');
-            console.log('Original canvas width:', originalWidth, 'px');
-            console.log('Target canvas width:', width, 'px');
-            console.log('Scale factor used:', scale.toFixed(3));
-            console.log('Line width with 1.8x multiplier:', (brushRadius * 1.8).toFixed(2), 'px');
-          }
-          
-          ctx.beginPath();
-          ctx.moveTo(pts[0].x, pts[0].y);
-          
-          for (let i = 1; i < pts.length; i++) {
-            ctx.lineTo(pts[i].x, pts[i].y);
-          }
-          
-          ctx.stroke();
-        }
-
-        currentLine++;
-        
-        // Animate next stroke with a small delay
-        setTimeout(animateNextStroke, 30); // 30ms delay between strokes for smooth animation
-      };
-
-      // Start the animation
-      animateNextStroke();
-    } catch (error) {
-      console.error('Error animating drawing stroke:', error);
-    }
-  }, []);
-
-  // Function to render static drawing
-  const renderStaticDrawing = useCallback((canvas: HTMLCanvasElement, saveDataString: string, width: number, height: number) => {
-    try {
-      const data = JSON.parse(normalizeSaveDataString(saveDataString));
-      const originalWidth = data.width ?? 300;
-      const originalHeight = data.height ?? 300;
-      
-      // Calculate scale factors to fit the drawing within the target dimensions
-      const scaleX = width / originalWidth;
-      const scaleY = height / originalHeight;
-      const scale = Math.min(scaleX, scaleY); // Maintain aspect ratio
-      
-      // Calculate centering offsets
-      const scaledWidth = originalWidth * scale;
-      const scaledHeight = originalHeight * scale;
-      const offsetX = (width - scaledWidth) / 2;
-      const offsetY = (height - scaledHeight) / 2;
-
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-
-      // Clear canvas with transparent background
-      ctx.clearRect(0, 0, width, height);
-
-      // Apply scaling and centering transformation
-      ctx.save();
-      ctx.translate(offsetX, offsetY);
-      ctx.scale(scale, scale);
-
-      const lines = data.lines ?? [];
-      
-      // Render all lines at once (no animation)
-      lines.forEach((line: any) => {
-        const pts = line.points ?? [];
-        
-        if (pts.length >= 2) {
-          ctx.lineJoin = "round";
-          ctx.lineCap = "round";
-          ctx.strokeStyle = line.brushColor ?? "#111827";
-          
-          // Try multiple possible brush radius properties
-          const brushRadius = line.brushRadius ?? (line as any).brushSize ?? (line as any).width ?? 2;
-          
-          // Set line width with 1.8x multiplier to compensate for thin strokes
-          ctx.lineWidth = brushRadius * 1.8;
-        }
-      });
-      
-      ctx.restore();
-    } catch (error) {
-      console.error('Error rendering static drawing:', error);
-    }
-  }, []);
 
   // Update screen dimensions on resize
   useEffect(() => {
@@ -276,7 +140,6 @@ export default function Display2Page() {
           height,
           rotation: (Math.random() - 0.5) * 15, // Random rotation between -7.5 and 7.5 degrees
           timestamp: Date.now(),
-          animated: false, // New drawings are not animated initially
         };
         
         setFloatingDrawings(prev => {
@@ -290,10 +153,6 @@ export default function Display2Page() {
             
             // Get the removed drawing's position to reuse
             const removedDrawing = sorted[0]; // Oldest drawing that was removed
-            
-            // Clean up initializedCanvases for removed drawing
-            const keysToRemove = Array.from(initializedCanvases.current).filter(key => key.startsWith(`${removedDrawing.id}-`));
-            keysToRemove.forEach(key => initializedCanvases.current.delete(key));
             
             // Update the new drawing to use the removed drawing's position
             const updatedWithReusedPosition = trimmed.map(d => 
@@ -330,7 +189,7 @@ export default function Display2Page() {
           </h1>
         </div>
 
-        {/* Floating Drawing Animations - Raw drawings on canvas */}
+        {/* Floating Drawing Animations - Using react-canvas-draw */}
         {floatingDrawings.map((drawing) => (
           <div
             key={drawing.id}
@@ -343,40 +202,17 @@ export default function Display2Page() {
               transform: `rotate(${drawing.rotation}deg)`,
             }}
           >
-            <canvas
-              ref={(el) => {
-                if (el && drawing.width > 0 && drawing.height > 0) {
-                  const canvasKey = `${drawing.id}-${drawing.width}-${drawing.height}`;
-                  
-                  // Only process this canvas if it hasn't been initialized yet
-                  if (!initializedCanvases.current.has(canvasKey)) {
-                    try {
-                      el.width = drawing.width;
-                      el.height = drawing.height;
-                      
-                      if (!drawing.animated) {
-                        // Animate the drawing stroke by stroke
-                        animateDrawingStroke(el, drawing.image.canvas, drawing.width, drawing.height);
-                        
-                        // Mark this drawing as animated to prevent re-animation
-                        setFloatingDrawings(prev => 
-                          prev.map(d => 
-                            d.id === drawing.id ? { ...d, animated: true } : d
-                          )
-                        );
-                      } else {
-                        // For already animated drawings, just render the final result
-                        renderStaticDrawing(el, drawing.image.canvas, drawing.width, drawing.height);
-                      }
-                      
-                      // Mark this canvas as initialized
-                      initializedCanvases.current.add(canvasKey);
-                    } catch (error) {
-                      console.error('Error rendering drawing:', error);
-                    }
-                  }
-                }
-              }}
+            <CanvasDraw
+              saveData={normalizeSaveDataString(drawing.image.canvas)}
+              canvasWidth={300}
+              canvasHeight={300}
+              disabled
+              hideGrid
+              hideInterface
+              brushRadius={2}
+              lazyRadius={0}
+              brushColor="#111827"
+              backgroundColor="#ffffff"
               style={{
                 width: drawing.width,
                 height: drawing.height,
