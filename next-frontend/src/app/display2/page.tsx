@@ -138,16 +138,20 @@ export default function Display2Page() {
           timestamp: Date.now(),
         };
         
-        setFloatingDrawings((prev) => {
-          // optional: de-dupe by id to avoid duplicates when polling races happen
-          const withoutDup = prev.filter(d => d.id !== newDrawing.id);
-        
-          if (withoutDup.length >= MAX_FRAME_IMAGES) {
-            // drop exactly the oldest one (FIFO) and append the new
-            return [...withoutDup.slice(-(MAX_FRAME_IMAGES - 1)), newDrawing];
-          }
-          return [...withoutDup, newDrawing];
-        });
+setFloatingDrawings((prev) => {
+  // 1) remove any existing item with the same id (prevents duplicates)
+  const dedup = prev.filter(d => d.id !== newDrawing.id);
+
+  // 2) if full, drop the oldest (index 0), then append the new
+  const base = dedup.length >= MAX_FRAME_IMAGES ? dedup.slice(1) : dedup;
+
+  const next = [...base, newDrawing];
+
+  // (optional) debug
+  console.log('FIFO:', { before: prev.length, after: next.length });
+
+  return next;
+});
         
         
         setProcessedImages(prev => new Set([...prev, latestImage.imageId]));
@@ -174,7 +178,7 @@ export default function Display2Page() {
         {/* Floating Drawing Animations - Using react-canvas-draw */}
         {floatingDrawings.map((drawing) => (
           <div
-            key={drawing.id}
+            key={`${drawing.id}-${drawing.timestamp}`}
             className="absolute z-20"
             style={{
               left: drawing.x,
