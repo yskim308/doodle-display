@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useDrawingPolling } from "@/hooks/use-drawing-polling";
-import { normalizeSaveDataString } from "@/utils/canvas";
-import CanvasDraw from "react-canvas-draw";
+import { normalizeSaveDataString, renderSaveDataToCanvas } from "@/utils/canvas";
 import type { ImageObject } from "@/types/image-object";
 
 interface FloatingDrawing {
@@ -61,7 +60,7 @@ export default function Display2Page() {
 
   // Check if a position overlaps with existing drawings
   const checkOverlap = (x: number, y: number, width: number, height: number): boolean => {
-    const margin = 20; // Very small margin since drawings are now tiny
+    const margin = 50; // Your original margin that was working
     
     return floatingDrawings.some(drawing => {
       const dx = Math.abs(x - drawing.x);
@@ -120,9 +119,13 @@ export default function Display2Page() {
       if (!processedImages.has(latestImage.imageId)) {
         console.log('✅ New drawing detected in display2:', latestImage.imageId);
         
-        // Use very tiny sizes with safety margin to ensure NO clipping ever
-        const width = 50;   // Extra small width with safety margin
-        const height = 50;  // Extra small height with safety margin
+        // Use your original working sizing logic
+        const baseSize = Math.min(screenDimensions.width, screenDimensions.height) * 0.15; // Base 15% of screen
+        const sizeVariation = baseSize * 0.3; // 30% variation
+        const containerSize = baseSize + (Math.random() * sizeVariation - sizeVariation / 2); // Random variation around base size
+        
+        const width = Math.max(containerSize, 120); // Minimum 120px width
+        const height = Math.max(containerSize, 120); // Minimum 120px height
         const position = generateRandomPosition(width, height);
         
         // Create new floating drawing
@@ -208,26 +211,24 @@ export default function Display2Page() {
               boxSizing: 'border-box'
             }}
           >
-            <CanvasDraw
-              saveData={normalizeSaveDataString(drawing.image.canvas)}
-              canvasWidth={300}
-              canvasHeight={300}
-              disabled
-              hideGrid
-              hideInterface
-              brushRadius={2}
-              lazyRadius={0}
-              brushColor="#111827"
-              backgroundColor="#ffffff"
+            <canvas
+              ref={(el) => {
+                if (el && drawing.width > 0 && drawing.height > 0) {
+                  el.width = drawing.width;
+                  el.height = drawing.height;
+                  
+                  // Use your original renderSaveDataToCanvas function
+                  renderSaveDataToCanvas(el, drawing.image.canvas, {
+                    width: drawing.width,
+                    height: drawing.height,
+                    background: 'transparent'
+                  });
+                }
+              }}
               style={{
                 width: drawing.width,
                 height: drawing.height,
-                display: 'block',
-                // Safari-specific fixes to prevent clipping
-                WebkitTransform: 'translateZ(0)',
-                transform: 'translateZ(0)',
-                backfaceVisibility: 'hidden',
-                WebkitBackfaceVisibility: 'hidden'
+                display: 'block'
               }}
             />
           </div>
