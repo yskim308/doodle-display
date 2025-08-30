@@ -61,7 +61,7 @@ export default function Display2Page() {
 
   // Check if a position overlaps with existing drawings
   const checkOverlap = (x: number, y: number, width: number, height: number): boolean => {
-    const margin = 50; // Increased margin for TV display
+    const margin = 30; // Reduced margin to fit more drawings on notebook screens
     
     return floatingDrawings.some(drawing => {
       const dx = Math.abs(x - drawing.x);
@@ -120,9 +120,9 @@ export default function Display2Page() {
       if (!processedImages.has(latestImage.imageId)) {
         console.log('✅ New drawing detected in display2:', latestImage.imageId);
         
-        // Use fixed, smaller sizes to prevent clipping
-        const width = 150;  // Fixed width
-        const height = 150; // Fixed height
+        // Use very small, fixed sizes to fit 20 drawings on notebook screens
+        const width = 80;   // Fixed width - smaller for notebook screens
+        const height = 80;  // Fixed height - smaller for notebook screens
         const position = generateRandomPosition(width, height);
         
         // Create new floating drawing
