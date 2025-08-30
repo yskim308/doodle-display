@@ -47,7 +47,8 @@ export function renderSaveDataToCanvas(
   saveDataString: string,
   opts: RenderOptions = {}
 ) {
-  const data = JSON.parse(normalizeSaveDataString(saveDataString));
+  try {
+    const data = JSON.parse(normalizeSaveDataString(saveDataString));
   const originalWidth = data.width ?? DEFAULT_WIDTH;
   const originalHeight = data.height ?? DEFAULT_HEIGHT;
   const targetWidth = opts.width ?? originalWidth;
@@ -122,7 +123,8 @@ export function renderSaveDataToCanvas(
     if (data.lines.length > 0 && data.lines[0] === line) {
       console.log('=== BRUSH SCALING DEBUG ===');
       console.log('Original brush radius:', brushRadius, 'px');
-      console.log('Enlarged brush radius (1.8x):', enlargedBrushRadius, 'px');
+      console.log('Stroke multiplier:', multiplier, 'x');
+      console.log('Enlarged brush radius:', enlargedBrushRadius, 'px');
       console.log('Original canvas width:', originalWidth, 'px');
       console.log('Brush-to-canvas ratio:', relativeBrushRatio.toFixed(4));
       console.log('Target canvas width:', targetWidth, 'px');
@@ -141,5 +143,16 @@ export function renderSaveDataToCanvas(
 
   // Restore the context
   ctx.restore();
+  } catch (error) {
+    console.error('Error rendering canvas:', error);
+    // Fallback: clear canvas and show error
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#ff0000";
+      ctx.font = "16px Arial";
+      ctx.fillText("Rendering Error", 10, 30);
+    }
+  }
 }
 
