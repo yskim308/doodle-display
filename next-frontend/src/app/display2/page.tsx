@@ -210,7 +210,7 @@ export default function Display2Page() {
                     width: drawing.width,
                     height: drawing.height,
                     background: 'transparent',
-                    strokeMultiplier: 3 // Make strokes 3x thicker on display2
+                    strokeMultiplier: 4 // Make strokes 4x thicker on display2
                   });
                 }
               }}
