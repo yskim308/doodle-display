@@ -61,7 +61,7 @@ export default function Display2Page() {
 
   // Check if a position overlaps with existing drawings
   const checkOverlap = (x: number, y: number, width: number, height: number): boolean => {
-    const margin = 30; // Reduced margin to fit more drawings on notebook screens
+    const margin = 20; // Very small margin since drawings are now tiny
     
     return floatingDrawings.some(drawing => {
       const dx = Math.abs(x - drawing.x);
@@ -120,9 +120,9 @@ export default function Display2Page() {
       if (!processedImages.has(latestImage.imageId)) {
         console.log('✅ New drawing detected in display2:', latestImage.imageId);
         
-        // Use very small, fixed sizes to fit 20 drawings on notebook screens
-        const width = 80;   // Fixed width - smaller for notebook screens
-        const height = 80;  // Fixed height - smaller for notebook screens
+        // Use tiny sizes to ensure drawings fit completely in containers without clipping
+        const width = 60;   // Very small width to prevent clipping
+        const height = 60;  // Very small height to prevent clipping
         const position = generateRandomPosition(width, height);
         
         // Create new floating drawing
@@ -187,7 +187,7 @@ export default function Display2Page() {
           </h1>
         </div>
 
-        {/* Floating Drawing Animations - Using react-canvas-draw */}
+        {/* Floating Drawing Animations - Using thereact-canvas-draw */}
         {floatingDrawings.map((drawing) => (
           <div
             key={`${drawing.id}-${drawing.timestamp}`}
