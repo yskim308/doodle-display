@@ -120,9 +120,9 @@ export default function Display2Page() {
       if (!processedImages.has(latestImage.imageId)) {
         console.log('✅ New drawing detected in display2:', latestImage.imageId);
         
-        // Use tiny sizes to ensure drawings fit completely in containers without clipping
-        const width = 60;   // Very small width to prevent clipping
-        const height = 60;  // Very small height to prevent clipping
+        // Use very tiny sizes with safety margin to ensure NO clipping ever
+        const width = 50;   // Extra small width with safety margin
+        const height = 50;  // Extra small height with safety margin
         const position = generateRandomPosition(width, height);
         
         // Create new floating drawing
@@ -202,7 +202,10 @@ export default function Display2Page() {
               pointerEvents: 'none',
               // Safari-specific fixes
               WebkitTransform: `rotate(${drawing.rotation}deg)`,
-              WebkitOverflowScrolling: 'touch'
+              WebkitOverflowScrolling: 'touch',
+              // Anti-clipping safety measures
+              padding: '2px',
+              boxSizing: 'border-box'
             }}
           >
             <CanvasDraw
