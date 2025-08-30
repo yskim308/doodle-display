@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useDrawingPolling } from "@/hooks/use-drawing-polling";
-import { normalizeSaveDataString, renderSaveDataToCanvas } from "@/utils/canvas";
+import { normalizeSaveDataString } from "@/utils/canvas";
+import CanvasDraw from "react-canvas-draw";
 import type { ImageObject } from "@/types/image-object";
 
 interface FloatingDrawing {
@@ -199,20 +200,17 @@ export default function Display2Page() {
               boxSizing: 'border-box'
             }}
           >
-            <canvas
-              ref={(el) => {
-                if (el && drawing.width > 0 && drawing.height > 0) {
-                  el.width = drawing.width;
-                  el.height = drawing.height;
-                  
-                  // Use your original renderSaveDataToCanvas function
-                  renderSaveDataToCanvas(el, drawing.image.canvas, {
-                    width: drawing.width,
-                    height: drawing.height,
-                    background: 'transparent'
-                  });
-                }
-              }}
+            <CanvasDraw
+              saveData={normalizeSaveDataString(drawing.image.canvas)}
+              canvasWidth={drawing.width}
+              canvasHeight={drawing.height}
+              disabled
+              hideGrid
+              hideInterface
+              brushRadius={2}
+              lazyRadius={0}
+              brushColor="#111827"
+              backgroundColor="#ffffff"
               style={{
                 width: drawing.width,
                 height: drawing.height,
