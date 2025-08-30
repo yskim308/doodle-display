@@ -86,14 +86,31 @@ export function renderSaveDataToCanvas(
 
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
-    ctx.strokeStyle = line.brushColor ?? "#111827";
+    
+    // Check if this is an eraser stroke
+    const isEraser = line.brushColor === "rgba(0,0,0,0)" || 
+                     line.brushColor === "transparent" || 
+                     (line as any).eraser === true;
+    
+    if (isEraser) {
+      // Handle eraser strokes - use destination-out compositing
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.strokeStyle = "rgba(0,0,0,1)"; // Any color works for eraser
+    } else {
+      // Handle regular brush strokes
+      ctx.globalCompositeOperation = "source-over";
+      ctx.strokeStyle = line.brushColor ?? "#111827";
+    }
     
     // Try multiple possible brush radius properties
     const brushRadius = line.brushRadius ?? (line as any).brushSize ?? (line as any).width ?? 2;
     
+    // Make strokes 1.8x bigger as requested
+    const enlargedBrushRadius = brushRadius * 1.8;
+    
     // CORRECT SCALING: Maintain the same brush-to-canvas ratio
     // Calculate what percentage of the original canvas the brush occupied
-    const relativeBrushRatio = brushRadius / originalWidth;
+    const relativeBrushRatio = enlargedBrushRadius / originalWidth;
     // Apply that same ratio to the new canvas size
     const scaledBrushRadius = relativeBrushRatio * targetWidth;
     
@@ -103,11 +120,13 @@ export function renderSaveDataToCanvas(
     if (data.lines.length > 0 && data.lines[0] === line) {
       console.log('=== BRUSH SCALING DEBUG ===');
       console.log('Original brush radius:', brushRadius, 'px');
+      console.log('Enlarged brush radius (1.8x):', enlargedBrushRadius, 'px');
       console.log('Original canvas width:', originalWidth, 'px');
       console.log('Brush-to-canvas ratio:', relativeBrushRatio.toFixed(4));
       console.log('Target canvas width:', targetWidth, 'px');
       console.log('Scaled brush radius:', scaledBrushRadius.toFixed(2), 'px');
       console.log('Scale factor used:', (targetWidth / originalWidth).toFixed(3));
+      console.log('Is eraser:', isEraser);
     }
 
     ctx.beginPath();
