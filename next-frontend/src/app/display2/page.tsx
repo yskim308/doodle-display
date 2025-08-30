@@ -81,10 +81,9 @@ export default function Display2Page() {
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     
-    // Adaptive margins and header height for different screen sizes
-    const isSmallScreen = Math.min(viewportWidth, viewportHeight) < 768;
-    const headerHeight = isSmallScreen ? 60 : 80; // Smaller header on mobile
-    const margin = isSmallScreen ? 20 : 30; // Smaller margins on mobile
+    // Simple, fixed margins
+    const headerHeight = 80;
+    const margin = 30;
     
     while (attempts < maxAttempts) {
       // Generate position within the full viewport, ensuring full visibility
@@ -121,26 +120,9 @@ export default function Display2Page() {
       if (!processedImages.has(latestImage.imageId)) {
         console.log('✅ New drawing detected in display2:', latestImage.imageId);
         
-        // Generate responsive dimensions that work on ALL screen sizes
-        const minScreenDimension = Math.min(screenDimensions.width, screenDimensions.height);
-        
-        // Adaptive sizing: smaller screens get smaller drawings
-        let baseSize;
-        if (minScreenDimension < 768) { // Mobile/tablet
-          baseSize = minScreenDimension * 0.12; // 12% of screen
-        } else if (minScreenDimension < 1200) { // Small desktop
-          baseSize = minScreenDimension * 0.13; // 13% of screen
-        } else { // Large desktop/TV
-          baseSize = minScreenDimension * 0.15; // 15% of screen
-        }
-        
-        const sizeVariation = baseSize * 0.2; // Reduced variation for smaller screens
-        const containerSize = baseSize + (Math.random() * sizeVariation - sizeVariation / 2);
-        
-        // Adaptive minimum sizes
-        const minSize = minScreenDimension < 768 ? 80 : 120; // Smaller minimum on mobile
-        const width = Math.max(containerSize, minSize);
-        const height = Math.max(containerSize, minSize);
+        // Use fixed, smaller sizes to prevent clipping
+        const width = 150;  // Fixed width
+        const height = 150; // Fixed height
         const position = generateRandomPosition(width, height);
         
         // Create new floating drawing
