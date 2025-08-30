@@ -141,32 +141,20 @@ export default function Display2Page() {
         };
         
         setFloatingDrawings((prev) => {
-          const startingCount = prev.length;
-          console.log(`🎨 DRAWING ${startingCount + 1} ADDED - Current drawings on screen: ${startingCount}`);
-          
-          // Check if array is getting full
-          if (startingCount >= MAX_FRAME_IMAGES - 2) {
-            console.log(`⚠️  ARRAY GETTING FULL: ${startingCount}/${MAX_FRAME_IMAGES} - Will pop soon!`);
-          }
-          
-          // 1) remove any existing item with the same id (prevents duplicates)
+          // 1) remove any existing item with the same id
           const dedup = prev.filter(d => d.id !== newDrawing.id);
-          
-          // 2) if original array was full, drop the oldest, then append the new
-          const shouldRemoveOldest = startingCount >= MAX_FRAME_IMAGES;
-          
-          if (shouldRemoveOldest) {
-            console.log(`🗑️  ARRAY FULL (${startingCount}/${MAX_FRAME_IMAGES}) - Removing oldest drawing!`);
-            const base = dedup.slice(1);
-            const next = [...base, newDrawing];
-            console.log(`✅ OLDEST POPPED - Now showing ${next.length} drawings`);
-            return next;
-          } else {
-            const next = [...dedup, newDrawing];
-            console.log(`➕ DRAWING ADDED - Now showing ${next.length} drawings`);
-            return next;
+        
+          // 2) append new drawing
+          const next = [...dedup, newDrawing];
+        
+          // 3) if over max, drop oldest from the front
+          if (next.length > MAX_FRAME_IMAGES) {
+            return next.slice(next.length - MAX_FRAME_IMAGES);
           }
+          return next;
         });
+          
+
         
         
         setProcessedImages(prev => new Set([...prev, latestImage.imageId]));
