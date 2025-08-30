@@ -35,6 +35,7 @@ export interface RenderOptions {
   width?: number
   height?: number
   background?: string
+  strokeMultiplier?: number
 }
 
 /**
@@ -105,8 +106,9 @@ export function renderSaveDataToCanvas(
     // Try multiple possible brush radius properties
     const brushRadius = line.brushRadius ?? (line as any).brushSize ?? (line as any).width ?? 2;
     
-    // Make strokes 1.8x bigger as requested
-    const enlargedBrushRadius = brushRadius * 1.8;
+    // Apply stroke multiplier if specified, otherwise use 1.8x as default
+    const multiplier = opts.strokeMultiplier ?? 1.8;
+    const enlargedBrushRadius = brushRadius * multiplier;
     
     // CORRECT SCALING: Maintain the same brush-to-canvas ratio
     // Calculate what percentage of the original canvas the brush occupied
