@@ -217,13 +217,16 @@ export default function Display2Page() {
               height: drawing.height,
               transform: `rotate(${drawing.rotation}deg)`,
               overflow: 'visible',
-              pointerEvents: 'none'
+              pointerEvents: 'none',
+              // Safari-specific fixes
+              WebkitTransform: `rotate(${drawing.rotation}deg)`,
+              WebkitOverflowScrolling: 'touch'
             }}
           >
             <CanvasDraw
               saveData={normalizeSaveDataString(drawing.image.canvas)}
-              canvasWidth={drawing.width}
-              canvasHeight={drawing.height}
+              canvasWidth={300}
+              canvasHeight={300}
               disabled
               hideGrid
               hideInterface
@@ -235,7 +238,11 @@ export default function Display2Page() {
                 width: drawing.width,
                 height: drawing.height,
                 display: 'block',
-                overflow: 'visible'
+                // Safari-specific fixes to prevent clipping
+                WebkitTransform: 'translateZ(0)',
+                transform: 'translateZ(0)',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden'
               }}
             />
           </div>
