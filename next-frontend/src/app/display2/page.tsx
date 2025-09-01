@@ -36,7 +36,7 @@ export default function Display2Page() {
   const [processedImages, setProcessedImages] = useState<Set<string>>(new Set());
   
   // Maximum number of drawings to show at once
-  const MAX_FRAME_IMAGES = 20;
+  const MAX_FRAME_IMAGES = 24;
   
   // Screen dimensions for positioning
   const [screenDimensions, setScreenDimensions] = useState({ width: 1920, height: 1080 });
